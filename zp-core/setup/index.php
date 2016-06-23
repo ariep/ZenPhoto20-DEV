@@ -234,7 +234,7 @@ if ($updatezp_config) {
 
 // Important. when adding new database support this switch may need to be extended,
 $engines = array();
-$preferences = array('mysqli' => 1, 'pdo_mysql' => 2, 'mysql' => 3);
+$preferences = array('mysqli' => 1, 'pdo_mysql' => 2, 'mysql' => 3, 'pdo_pgsql' => 4);
 $cur = 999999;
 $preferred = NULL;
 
