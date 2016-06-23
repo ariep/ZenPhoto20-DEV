@@ -541,7 +541,7 @@ function checkUnique($table, $unique) {
                 FROM information_schema.table_constraints AS tc
                 JOIN information_schema.key_column_usage AS kcu
                   ON tc.constraint_name = kcu.constraint_name
-                WHERE constraint_type = \'UNIQUE\' AND tc.table_name = ' . $table;
+                WHERE constraint_type = \'UNIQUE\' AND tc.table_name = \'' . $table . '\'';
 	$result = query_full_array($sql);
 	foreach ($result as $key) {
                 unset($unique[$key['column_name']]);

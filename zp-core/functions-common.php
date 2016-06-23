@@ -333,7 +333,7 @@ function sanitize_string($input, $sanitize_level) {
  * @since 0.6
  */
 function prefix($tablename = NULL) {
-	return '`' . DATABASE_PREFIX . $tablename . '`';
+	return DATABASE_PREFIX . $tablename;
 }
 
 /**
