@@ -133,7 +133,7 @@ function db_show($what, $aux = '') {
 	global $_zp_DB_details;
 	switch ($what) {
 		case 'tables':
-			$sql = "SHOW TABLES FROM `" . $_zp_DB_details['mysql_database'] . "` LIKE '" . db_LIKE_escape($_zp_DB_details['mysql_prefix']) . "%'";
+			$sql = "SELECT * FROM information_schema.tables WHERE table_schema = 'public' AND table_name LIKE '" . db_LIKE_escape($_zp_DB_details['mysql_prefix']) . "%'";
 			return query($sql, false);
 		case 'columns':
 			$sql = 'SHOW FULL COLUMNS FROM `' . $_zp_DB_details['mysql_prefix'] . $aux . '`';
