@@ -537,12 +537,14 @@ function setupUserAuthorized() {
 
 function checkUnique($table, $unique) {
 	global $autorun;
-	$sql = 'SHOW KEYS FROM ' . $table;
+	$sql = 'SELECT kcu.column_name
+                FROM information_schema.table_constraints AS tc
+                JOIN information_schema.key_column_usage AS kcu
+                  ON tc.constraint_name = kcu.constraint_name
+                WHERE constraint_type = \'UNIQUE\' AND tc.table_name = ' . $table;
 	$result = query_full_array($sql);
 	foreach ($result as $key) {
-		if (!$key['Non_unique']) {
-			unset($unique[$key['Column_name']]);
-		}
+                unset($unique[$key['column_name']]);
 	}
 	if (!empty($unique)) {
 		$autorun = false;
