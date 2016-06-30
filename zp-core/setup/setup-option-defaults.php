@@ -33,22 +33,22 @@ setOptionDefault('extra_auth_hash_text', $auth_extratext);
 setOption('adminTagsTab', 0);
 
 /* fix for NULL theme name */
-Query('UPDATE ' . prefix('options') . ' SET `theme`="" WHERE `theme` IS NULL');
+Query('UPDATE ' . prefix('options') . ' SET theme = "" WHERE theme IS NULL');
 
 //clean up tag list quoted strings
-$sql = 'SELECT * FROM ' . prefix('tags') . ' WHERE `name` LIKE \'"%\' OR `name` LIKE "\'%"';
+$sql = 'SELECT * FROM ' . prefix('tags') . ' WHERE name LIKE \'"%\' OR name LIKE "\'%"';
 $result = query($sql);
 if ($result) {
 	while ($row = db_fetch_assoc($result)) {
-		$sql = 'UPDATE ' . prefix('tags') . ' SET `name`=' . db_quote(trim($row['name'], '"\'')) . ' WHERE `id`=' . $row['id'];
+		$sql = 'UPDATE ' . prefix('tags') . ' SET name = ' . db_quote(trim($row['name'], '"\'')) . ' WHERE id = ' . $row['id'];
 		if (!query($sql, false)) {
 			$oldtag = $row['id'];
-			$sql = 'DELETE FROM ' . prefix('tags') . ' WHERE `id`=' . $oldtag;
+			$sql = 'DELETE FROM ' . prefix('tags') . ' WHERE id = ' . $oldtag;
 			query($sql);
-			$sql = 'SELECT * FROM ' . prefix('tags') . ' WHERE `name`=' . db_quote(trim($row['name'], '"\''));
+			$sql = 'SELECT * FROM ' . prefix('tags') . ' WHERE name = ' . db_quote(trim($row['name'], '"\''));
 			$row = query_single_row($sql);
 			if (!empty($row)) {
-				$sql = 'UPDATE ' . prefix('obj_to_tag') . ' SET `tagid`=' . $row['id'] . ' WHERE `tagid`=' . $oldtag;
+				$sql = 'UPDATE ' . prefix('obj_to_tag') . ' SET tagid = ' . $row['id'] . ' WHERE tagid = ' . $oldtag;
 			}
 		}
 	}
@@ -56,23 +56,23 @@ if ($result) {
 
 //migrate "publish" dates
 foreach (array('albums', 'images', 'news', 'pages') as $table) {
-	$sql = 'UPDATE ' . prefix($table) . ' SET `publishdate`=NULL WHERE `publishdate` ="0000-00-00 00:00:00"';
+	$sql = 'UPDATE ' . prefix($table) . ' SET publishdate=NULL WHERE publishdate ="0000-00-00 00:00:00"';
 	query($sql);
-	$sql = 'UPDATE ' . prefix($table) . ' SET `expiredate`=NULL WHERE `expiredate` ="0000-00-00 00:00:00"';
+	$sql = 'UPDATE ' . prefix($table) . ' SET expiredate=NULL WHERE expiredate ="0000-00-00 00:00:00"';
 	query($sql);
-	$sql = 'UPDATE ' . prefix($table) . ' SET `publishdate`=`date` WHERE `publishdate` IS NULL AND `show`="1"';
+	$sql = 'UPDATE ' . prefix($table) . ' SET publishdate="date" WHERE publishdate IS NULL AND show="1"';
 	query($sql);
 }
 foreach (array('news', 'pages') as $table) {
-	$sql = 'UPDATE ' . prefix($table) . ' SET `lastchange`=`date` WHERE `lastchange` IS NULL';
+	$sql = 'UPDATE ' . prefix($table) . ' SET lastchange="date" WHERE lastchange IS NULL';
 	query($sql);
 }
-// published albums where both the `publishdate` and the `date` were NULL
-$sql = 'SELECT `mtime`,`id` FROM ' . prefix('albums') . ' WHERE `publishdate` IS NULL AND `show`="1"';
+// published albums where both the publishdate and the date were NULL
+$sql = 'SELECT mtime,id FROM ' . prefix('albums') . ' WHERE publishdate IS NULL AND show="1"';
 $result = query($sql);
 if ($result) {
 	while ($row = db_fetch_assoc($result)) {
-		$sql = 'UPDATE ' . prefix('albums') . ' SET `publishdate`=' . db_quote(date('Y-m-d H:i:s', $row['mtime'])) . ' WHERE `id`=' . $row['id'];
+		$sql = 'UPDATE ' . prefix('albums') . ' SET publishdate=' . db_quote(date('Y-m-d H:i:s', $row['mtime'])) . ' WHERE id=' . $row['id'];
 		query($sql);
 	}
 }
@@ -80,17 +80,17 @@ if ($result) {
 $result = db_list_fields('images');
 $where = '';
 if (isset($result['EXIFOrientation'])) {
-	$where = '(`rotation` IS NULL AND `EXIFOrientation`!="")';
+	$where = '(rotation IS NULL AND EXIFOrientation!="")';
 }
 if (isset($result['EXIFGPSLatitude'])) {
-	$where .= ' OR (`GPSLatitude` IS NULL AND NOT `EXIFGPSLatitude` IS NULL)';
+	$where .= ' OR (GPSLatitude IS NULL AND NOT EXIFGPSLatitude IS NULL)';
 } else if (isset($result['EXIFGPSLongitude'])) {
-	$where .= ' OR (`GPSLongitude` IS NULL AND NOT `EXIFGPSLongitude` IS NULL)';
+	$where .= ' OR (GPSLongitude IS NULL AND NOT EXIFGPSLongitude IS NULL)';
 } else if (isset($result['EXIFGPSAltitude'])) {
-	$where .= ' OR (`GPSAltitude` IS NULL AND NOT `EXIFGPSAltitude` IS NULL)';
+	$where .= ' OR (GPSAltitude IS NULL AND NOT EXIFGPSAltitude IS NULL)';
 }
 if (!empty($where)) {
-	$sql = 'SELECT `id` FROM ' . prefix('images') . ' WHERE ' . $where;
+	$sql = 'SELECT id FROM ' . prefix('images') . ' WHERE ' . $where;
 	$result = query($sql);
 	while ($row = db_fetch_assoc($result)) {
 		$img = getItemByID('images', $row['id']);
@@ -412,7 +412,7 @@ if (file_exists(SERVERPATH . '/' . THEMEFOLDER . '/effervescence_plus')) {
 		$_zp_gallery->setCurrentTheme('effervescence+');
 		$_zp_gallery->save();
 	}
-	$options = query_full_array('SELECT LCASE(`name`) as name, `value` FROM ' . prefix('options') . ' WHERE `theme`="effervescence_plus"');
+	$options = query_full_array('SELECT LCASE(name) as name, value FROM ' . prefix('options') . ' WHERE theme="effervescence_plus"');
 	foreach ($options as $option) {
 		setThemeOption($option['name'], $option['value'], NULL, 'effervescence+', true);
 	}
@@ -445,7 +445,7 @@ if (file_exists(SERVERPATH . '/' . THEMEFOLDER . '/effervescence_plus')) {
 if (getOption('search_space_is_OR')) {
 	setOption('search_space_is', '|');
 }
-query('DELETE FROM ' . prefix('options') . ' WHERE  `name` ="search_space_is_OR"', false);
+query('DELETE FROM ' . prefix('options') . ' WHERE  name ="search_space_is_OR"', false);
 
 if (!file_exists(SERVERPATH . '/favicon.ico')) {
 	@copy(SERVERPATH . '/' . ZENFOLDER . '/images/favicon.ico', SERVERPATH . '/favicon.ico');
@@ -609,8 +609,8 @@ setOptionDefault('search_image_sort_type', 'title');
 setOptionDefault('search_album_sort_direction', '');
 setOptionDefault('search_image_sort_direction', '');
 
-query('UPDATE ' . prefix('administrators') . ' SET `passhash`=' . ((int) getOption('strong_hash')) . ' WHERE `valid`>=1 AND `passhash` IS NULL');
-query('UPDATE ' . prefix('administrators') . ' SET `passupdate`=' . db_quote(date('Y-m-d H:i:s')) . ' WHERE `valid`>=1 AND `passupdate` IS NULL');
+query('UPDATE ' . prefix('administrators') . ' SET passhash=' . ((int) getOption('strong_hash')) . ' WHERE valid>=1 AND passhash IS NULL');
+query('UPDATE ' . prefix('administrators') . ' SET passupdate=' . db_quote(date('Y-m-d H:i:s')) . ' WHERE valid>=1 AND passupdate IS NULL');
 setOptionDefault('image_processor_flooding_protection', 1);
 setOptionDefault('codeblock_first_tab', 1);
 setOptionDefault('GD_FreeType_Path', SERVERPATH . '/' . USER_PLUGIN_FOLDER . '/gd_fonts');
