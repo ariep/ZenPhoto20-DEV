@@ -144,7 +144,7 @@ foreach ($template as $tablename => $table) {
 	if (!$exists) {
 		$create = array();
 		$create[] = "CREATE TABLE IF NOT EXISTS " . prefix($tablename) . " (";
-		$create[] = "  id integer UNSIGNED NOT NULL auto_increment,";
+		$create[] = "  id integer NOT NULL auto_increment,";
 	}
 	foreach ($table['fields'] as $key => $field) {
 		if ($key != 'id') {
