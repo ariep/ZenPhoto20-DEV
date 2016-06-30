@@ -263,6 +263,14 @@ foreach ($template as $tablename => $table) {
 		$create[] = ") $collation;";
 		$create = implode("\n", $create);
 		setupQuery($create);
+                if ($pgsql) {
+                        foreach ($table['keys'] as $key => $index) {
+                                if ($index['Non_unique']) {
+                                        $createIndex = "CREATE INDEX $key ON " . prefix($tablename) . " ($k)";
+                                        setupQuery($createIndex);
+                                }
+                        }
+                }
 	} else {
 		//handle surplus fields
 		if (array_key_exists('keys', $database[$tablename]) && !empty($database[$tablename]['keys'])) {
