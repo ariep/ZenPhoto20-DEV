@@ -19,7 +19,7 @@ else
 {
   $dbFamily = "mysql";
 }
-$pgsql = dbFamily == "pgsql";
+$pgsql = $dbFamily == "pgsql";
 
 $database = $orphans = array();
 foreach (getDBTables() as $table) {
