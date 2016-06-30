@@ -34,10 +34,14 @@ foreach (getDBTables() as $table) {
 	}
 
 	$indices = array();
-	$sql = 'SHOW KEYS FROM ' . prefix($table);
+        $sql = 'SELECT *
+                FROM information_schema.key_column_usage AS kcu
+                JOIN information_schema.table_constraints tc
+                  ON tc.constraint_name = kcu.constraint_name
+                WHERE kcu.table_name = \'' .  prefix($table) . '\';';
 	$result = query_full_array($sql);
 	foreach ($result as $index) {
-		if ($index['Key_name'] !== 'PRIMARY') {
+		if ($index['constraint_type'] !== 'PRIMARY KEY') {
 			$indices[$index['Key_name']][] = $index;
 		}
 	}
@@ -266,7 +270,7 @@ foreach ($template as $tablename => $table) {
                 if (isset($table['keys']) && $pgsql) {
                         foreach ($table['keys'] as $key => $index) {
                                 if ($index['Non_unique']) {
-                                        $createIndex = "CREATE INDEX $key ON " . prefix($tablename) . " ($k)";
+                                        $createIndex = "CREATE INDEX $key ON " . prefix($tablename) . " ($k);";
                                         setupQuery($createIndex);
                                 }
                         }
