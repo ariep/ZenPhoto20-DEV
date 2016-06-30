@@ -167,7 +167,7 @@ foreach ($template as $tablename => $table) {
 	}
 	foreach ($table['fields'] as $key => $field) {
 		if ($key != 'id') {
-			$string = "ALTER TABLE " . prefix($tablename) . " %s " . $field['Field'] . " " . $field['Type'];
+			$string = "ALTER TABLE " . prefix($tablename) . " %s " . db_field($field['Field']) . " " . $field['Type'];
 			if ($field['Null'] === 'NO')
 				$string .= " NOT NULL";
 			if (!empty($field['Default']) || $field['Default'] === '0' || $field['Null'] !== 'NO') {

@@ -25,6 +25,16 @@ function db_quote($string) {
 }
 
 /**
+ * Returns a quoted field name for DB queries
+ * @param type $string
+ * @return type
+ */
+function db_field($string) {
+	return '"' . $string . '"';
+}
+
+
+/**
  * Returns a list of database tables for the installation
  * @return type
  */
