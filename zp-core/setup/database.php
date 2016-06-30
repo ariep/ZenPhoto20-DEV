@@ -11,6 +11,16 @@
 $dbSoftware = db_software();
 $indexComments = version_compare($dbSoftware['version'], '5.5.0') >= 0;
 
+if ($dbSoftware['application'] == "PDO::pgsql")
+{
+  $dbFamily = "pgsql";
+}
+else
+{
+  $dbFamily = "mysql";
+}
+$pgsql = dbFamily == "pgsql";
+
 $database = $orphans = array();
 foreach (getDBTables() as $table) {
 	$tablecols = db_list_fields($table);
@@ -144,7 +154,12 @@ foreach ($template as $tablename => $table) {
 	if (!$exists) {
 		$create = array();
 		$create[] = "CREATE TABLE IF NOT EXISTS " . prefix($tablename) . " (";
-		$create[] = "  id integer NOT NULL auto_increment,";
+                if ($pgsql) {
+                        $create[] = "  id serial NOT NULL,";
+                }
+                else {
+                        $create[] = "  id integer NOT NULL auto_increment,";
+                }
 	}
 	foreach ($table['fields'] as $key => $field) {
 		if ($key != 'id') {
