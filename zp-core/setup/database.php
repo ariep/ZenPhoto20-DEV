@@ -272,7 +272,7 @@ foreach ($template as $tablename => $table) {
                 if (isset($table['keys']) && $pgsql) {
                         foreach ($table['keys'] as $key => $index) {
                                 if ($index['Non_unique']) {
-                                        $createIndex = "CREATE INDEX $key ON " . prefix($tablename) . " ($k);";
+                                        $createIndex = "CREATE INDEX ON " . prefix($tablename) . " ($k);";
                                         setupQuery($createIndex);
                                 }
                         }
