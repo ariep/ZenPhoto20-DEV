@@ -15,6 +15,7 @@ if (isset($_GET['debug'])) {
 	$debug = '';
 }
 
+echo 'setup-options 1';
 require(SERVERPATH . '/' . DATA_FOLDER . '/' . CONFIGFILE);
 $testFile = SERVERPATH . '/' . DATA_FOLDER . '/' . internalToFilesystem('charset_tést');
 if (!file_exists($testFile)) {
@@ -35,6 +36,7 @@ setOption('adminTagsTab', 0);
 /* fix for NULL theme name */
 Query('UPDATE ' . prefix('options') . ' SET theme = '' WHERE theme IS NULL');
 
+echo 'setup-options 2';
 //clean up tag list quoted strings
 $sql = 'SELECT * FROM ' . prefix('tags') . ' WHERE name LIKE \'"%\' OR name LIKE "\'%"';
 $result = query($sql);
@@ -54,6 +56,7 @@ if ($result) {
 	}
 }
 
+echo 'setup-options 3';
 //migrate "publish" dates
 foreach (array('albums', 'images', 'news', 'pages') as $table) {
 	$sql = 'UPDATE ' . prefix($table) . ' SET publishdate=NULL WHERE publishdate ="0000-00-00 00:00:00"';
@@ -116,12 +119,14 @@ if (!empty($where)) {
 	db_free_result($result);
 }
 
+echo 'setup-options 4';
 $old = @unserialize(getOption('zenphoto_install'));
 $from = preg_replace('/\[.*\]/', '', $old['ZENPHOTO']);
 
 setOption('zenphoto_install', serialize(installSignature()));
 $admins = $_zp_authority->getAdministrators('all');
 
+echo 'setup-options 5';
 $str = gettext("What is your father’s middle name?");
 $questions[] = getSerializedArray(getAllTranslations($str));
 $str = gettext("What street did your Grandmother live on?");
@@ -136,6 +141,7 @@ $str = gettext("What is the date of the Ides of March?");
 $questions[] = getSerializedArray(getAllTranslations($str));
 setOptionDefault('challenge_foils', serialize($questions));
 
+echo 'setup-options 6';
 if (empty($admins)) { //	empty administrators table
 	$groupsdefined = NULL;
 	if (isset($_SESSION['clone'][$cloneid])) { //replicate the user who cloned the install
@@ -180,6 +186,7 @@ if (empty($admins)) { //	empty administrators table
 	$groupsdefined = @unserialize(getOption('defined_groups'));
 }
 
+echo 'setup-options 7';
 // old configuration opitons. preserve them
 $conf = $_zp_conf_vars;
 setOptionDefault('time_offset', 0);
@@ -335,6 +342,7 @@ setOptionDefault('sharpen_threshold', 3);
 setOptionDefault('search_space_is_or', 0);
 setOptionDefault('search_no_albums', 0);
 
+echo 'setup-options 8';
 // default groups
 if (!is_array($groupsdefined)) {
 	$groupsdefined = array();
@@ -441,6 +449,7 @@ if (file_exists(SERVERPATH . '/' . THEMEFOLDER . '/effervescence_plus')) {
 </p>
 
 <?php
+echo 'setup-options 9';
 // migrate search space is opton
 if (getOption('search_space_is_OR')) {
 	setOption('search_space_is', '|');
