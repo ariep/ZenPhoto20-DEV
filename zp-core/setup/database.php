@@ -221,7 +221,7 @@ foreach ($template as $tablename => $table) {
 			$string = "ALTER TABLE " . prefix($tablename) . ' ADD ';
 			if ($index['Non_unique']) {
 				$string .= "INDEX ";
-				$u = "KEY";
+				$u = "INDEX";
 			} else {
 				$string .="UNIQUE ";
                                 if ($pgsql) {
