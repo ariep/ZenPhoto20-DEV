@@ -35,13 +35,13 @@ foreach (getDBTables() as $table) {
 		if (count($index) > 1) {
 			$column = array();
 			foreach ($index as $element) {
-				$column[] = "`" . $element['Column_name'] . "`";
+				$column[] = "" . $element['Column_name'] . "";
 			}
 			$index = array_shift($index);
 			$index['Column_name'] = implode(',', $column);
 		} else {
 			$index = array_shift($index);
-			$index['Column_name'] = "`" . $index['Column_name'] . "`";
+			$index['Column_name'] = "" . $index['Column_name'] . "";
 		}
 		unset($index['Table']);
 		unset($index['Seq_in_index']);
@@ -57,19 +57,19 @@ foreach (getDBTables() as $table) {
 			case 'user':
 				$keys = explode(',', $index['Column_name']);
 				sort($keys);
-				if ($table == 'administrators' && implode(',', $keys) === '`user`,`valid`') {
+				if ($table == 'administrators' && implode(',', $keys) === 'user,valid') {
 					$index['Index_comment'] = 'zp20';
 				}
 				break;
 			case 'filename':
 				$keys = explode(',', $index['Column_name']);
 				sort($keys);
-				if ($table == 'images' && implode(',', $keys) === '`albumid`,`filename`') {
+				if ($table == 'images' && implode(',', $keys) === 'albumid,filename') {
 					$index['Index_comment'] = 'zp20';
 				}
 				break;
 			case 'folder':
-				if ($table == 'albums' && $index['Column_name'] === '`folder`') {
+				if ($table == 'albums' && $index['Column_name'] === 'folder') {
 					$index['Index_comment'] = 'zp20';
 				}
 				break;
@@ -144,11 +144,11 @@ foreach ($template as $tablename => $table) {
 	if (!$exists) {
 		$create = array();
 		$create[] = "CREATE TABLE IF NOT EXISTS " . prefix($tablename) . " (";
-		$create[] = "  `id` int(11) UNSIGNED NOT NULL auto_increment,";
+		$create[] = "  id int(11) UNSIGNED NOT NULL auto_increment,";
 	}
 	foreach ($table['fields'] as $key => $field) {
 		if ($key != 'id') {
-			$string = "ALTER TABLE " . prefix($tablename) . " %s `" . $field['Field'] . "` " . $field['Type'];
+			$string = "ALTER TABLE " . prefix($tablename) . " %s " . $field['Field'] . " " . $field['Type'];
 			if ($field['Null'] === 'NO')
 				$string .= " NOT NULL";
 			if (!empty($field['Default']) || $field['Default'] === '0' || $field['Null'] !== 'NO') {
@@ -166,7 +166,7 @@ foreach ($template as $tablename => $table) {
 				$comment = " COMMENT '" . $field['Comment'] . "'";
 			}
 			$addString = sprintf($string, 'ADD COLUMN') . $comment . ';';
-			$changeString = sprintf($string, "CHANGE `" . $field['Field'] . "`") . $comment . ';';
+			$changeString = sprintf($string, "CHANGE " . $field['Field'] . "") . $comment . ';';
 			if ($exists) {
 				if (array_key_exists($key, $database[$tablename]['fields'])) {
 					if ($field != $database[$tablename]['fields'][$key]) {
@@ -187,7 +187,7 @@ foreach ($template as $tablename => $table) {
 		foreach ($database[$tablename]['fields'] as $key => $field) {
 			// drop fields no longer used
 			if ($field['Comment'] === 'zp20' || $field['Comment'] === 'optional_metadata') {
-				$dropString = "ALTER TABLE " . prefix($tablename) . " DROP `" . $field['Field'] . "`;";
+				$dropString = "ALTER TABLE " . prefix($tablename) . " DROP " . $field['Field'] . ";";
 				setupQuery($dropString);
 			} else {
 				if (strpos($field['Comment'], 'optional_') === false) {
@@ -205,14 +205,14 @@ foreach ($template as $tablename => $table) {
 				$u = "KEY";
 			} else {
 				$string .="UNIQUE ";
-				$u = "UNIQUE `$key`";
+				$u = "UNIQUE $key";
 			}
 
 			$k = $index['Column_name'];
 			if (!empty($index['Sub_part'])) {
 				$k .=" (" . $index['Sub_part'] . ")";
 			}
-			$alterString = "$string`$key` ($k)";
+			$alterString = "$string$key ($k)";
 			if ($indexComments) {
 				$alterString.=" COMMENT 'zp20';";
 			} else {
@@ -221,7 +221,7 @@ foreach ($template as $tablename => $table) {
 			if ($exists) {
 				if (isset($database[$tablename]['keys'][$key])) {
 					if ($index != $database[$tablename]['keys'][$key]) {
-						$dropString = "ALTER TABLE " . prefix($tablename) . " DROP INDEX `" . $index['Key_name'] . "`;";
+						$dropString = "ALTER TABLE " . prefix($tablename) . " DROP INDEX " . $index['Key_name'] . ";";
 						setupQuery($dropString);
 						setupQuery($alterString);
 					}
@@ -239,7 +239,7 @@ foreach ($template as $tablename => $table) {
 		}
 	}
 	if (!$exists) {
-		$create[] = "  PRIMARY KEY (`id`)";
+		$create[] = "  PRIMARY KEY (id)";
 		$create[] = ") $collation;";
 		$create = implode("\n", $create);
 		setupQuery($create);
@@ -249,7 +249,7 @@ foreach ($template as $tablename => $table) {
 			foreach ($database[$tablename]['keys'] as $index) {
 				$key = $index['Key_name'];
 				if (isset($index['Index_comment']) && $index['Index_comment'] === 'zp20') {
-					$dropString = "ALTER TABLE " . prefix($tablename) . " DROP INDEX `" . $key . "`;";
+					$dropString = "ALTER TABLE " . prefix($tablename) . " DROP INDEX " . $key . ";";
 					setupQuery($dropString);
 				} else {
 					$orpahns = sprintf(gettext('Setup found the key "%1$s" in the "%2$s" table. This index is not in use by ZenPhoto20.'), $key, $tablename);
