@@ -221,7 +221,7 @@ foreach ($template as $tablename => $table) {
 			$string = "ALTER TABLE " . prefix($tablename) . ' ADD ';
 			if ($index['Non_unique']) {
 				$string .= "INDEX ";
-				$u = "INDEX";
+				$u = "KEY";
 			} else {
 				$string .="UNIQUE ";
                                 if ($pgsql) {
@@ -253,11 +253,13 @@ foreach ($template as $tablename => $table) {
 					setupQuery($alterString);
 				}
 			} else {
-                                $tableString = "  $u ($k)";
-                                if ($indexComments && !$pgsql) {
-                                        $tableString .= "  COMMENT 'zp20'";
+                                if (!$pgsql || !$index['Non_unique']) {
+                                      $tableString = "  $u ($k)";
+                                      if ($indexComments && !$pgsql) {
+                                              $tableString .= "  COMMENT 'zp20'";
+                                      }
+                                      $create[] = $tableString . ',';
                                 }
-                                $create[] = $tableString . ',';
 			}
 			unset($database[$tablename]['keys'][$key]);
 		}
