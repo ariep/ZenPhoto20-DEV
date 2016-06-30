@@ -33,7 +33,7 @@ setOptionDefault('extra_auth_hash_text', $auth_extratext);
 setOption('adminTagsTab', 0);
 
 /* fix for NULL theme name */
-Query('UPDATE ' . prefix('options') . ' SET theme = "" WHERE theme IS NULL');
+Query('UPDATE ' . prefix('options') . ' SET theme = '' WHERE theme IS NULL');
 
 //clean up tag list quoted strings
 $sql = 'SELECT * FROM ' . prefix('tags') . ' WHERE name LIKE \'"%\' OR name LIKE "\'%"';
@@ -60,7 +60,7 @@ foreach (array('albums', 'images', 'news', 'pages') as $table) {
 	query($sql);
 	$sql = 'UPDATE ' . prefix($table) . ' SET expiredate=NULL WHERE expiredate ="0000-00-00 00:00:00"';
 	query($sql);
-	$sql = 'UPDATE ' . prefix($table) . ' SET publishdate="date" WHERE publishdate IS NULL AND show="1"';
+	$sql = 'UPDATE ' . prefix($table) . ' SET publishdate="date" WHERE publishdate IS NULL AND show=1';
 	query($sql);
 }
 foreach (array('news', 'pages') as $table) {
@@ -68,7 +68,7 @@ foreach (array('news', 'pages') as $table) {
 	query($sql);
 }
 // published albums where both the publishdate and the date were NULL
-$sql = 'SELECT mtime,id FROM ' . prefix('albums') . ' WHERE publishdate IS NULL AND show="1"';
+$sql = 'SELECT mtime,id FROM ' . prefix('albums') . ' WHERE publishdate IS NULL AND show=1';
 $result = query($sql);
 if ($result) {
 	while ($row = db_fetch_assoc($result)) {
