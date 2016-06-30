@@ -175,7 +175,7 @@ foreach ($template as $tablename => $table) {
 					$string .= " DEFAULT '" . $field['Default'] . "'";
 				}
 			}
-			if (empty($field['Comment'])) {
+			if (empty($field['Comment']) || $pgsql) {
 				$comment = '';
 			} else {
 				$comment = " COMMENT '" . $field['Comment'] . "'";
