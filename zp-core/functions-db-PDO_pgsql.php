@@ -118,7 +118,7 @@ function db_getSQLmode() {
 }
 
 function db_collation() {
-	return ' CHARACTER SET utf8 COLLATE utf8_unicode_ci';
+	return '';
 }
 
 function db_create_table(&$sql) {
