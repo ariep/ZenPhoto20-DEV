@@ -220,7 +220,12 @@ foreach ($template as $tablename => $table) {
 				$u = "KEY";
 			} else {
 				$string .="UNIQUE ";
-				$u = "UNIQUE $key";
+                                if ($pgsql) {
+                                        $u = "UNIQUE";
+                                }
+                                else {
+                                        $u = "UNIQUE $key";
+                                }
 			}
 
 			$k = $index['Column_name'];
@@ -244,11 +249,11 @@ foreach ($template as $tablename => $table) {
 					setupQuery($alterString);
 				}
 			} else {
-				$tableString = "  $u ($k)";
-				if ($indexComments) {
-					$tableString .= "  COMMENT 'zp20'";
-				}
-				$create[] = $tableString . ',';
+                                $tableString = "  $u ($k)";
+                                if ($indexComments && !$pgsql) {
+                                        $tableString .= "  COMMENT 'zp20'";
+                                }
+                                $create[] = $tableString . ',';
 			}
 			unset($database[$tablename]['keys'][$key]);
 		}
