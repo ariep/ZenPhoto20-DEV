@@ -125,14 +125,14 @@ foreach ($metadataProviders as $source => $handler) {
 					if ($s < 255) {
 						$s = "varchar($s)";
 					} else {
-						$s = 'mediumtext';
+						$s = 'text';
 					}
 					break;
 				case 'number':
 					$s = 'varchar(52)';
 					break;
 				case 'time':
-					$s = 'datetime';
+					$s = 'timestamp';
 					break;
 			}
 			$field = array(

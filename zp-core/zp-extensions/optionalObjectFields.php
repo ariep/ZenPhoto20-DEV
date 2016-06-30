@@ -79,7 +79,7 @@ class optionalObjectFields extends fieldExtender {
 						'table' => 'albums',
 						'name' => 'date',
 						'desc' => gettext('Date'),
-						'type' => 'datetime',
+						'type' => 'timestamp',
 						'edit' => 'function',
 						'function' => 'optionalObjectFields::date'
 				),
@@ -139,7 +139,7 @@ class optionalObjectFields extends fieldExtender {
 						'table' => 'images',
 						'name' => 'date',
 						'desc' => gettext('Date'),
-						'type' => 'datetime',
+						'type' => 'timestamp',
 						'edit' => 'function',
 						'function' => 'optionalObjectFields::date'
 				),
