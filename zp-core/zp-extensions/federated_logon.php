@@ -193,7 +193,7 @@ class federated_logon {
 	 */
 	static function credentials($user, $email, $name, $redirect) {
 		global $_zp_authority;
-		$userobj = $_zp_authority->getAnAdmin(array('`user`=' => $user, '`valid`=' => 1));
+		$userobj = $_zp_authority->getAnAdmin(array('"user" =' => $user, 'valid =' => 1));
 		$more = false;
 		if ($userobj) { //	update if changed
 			$save = false;
@@ -210,7 +210,7 @@ class federated_logon {
 			}
 		} else { //	User does not exist, create him
 			$groupname = getOption('federated_login_group');
-			$groupobj = $_zp_authority->getAnAdmin(array('`user`=' => $groupname, '`valid`=' => 0));
+			$groupobj = $_zp_authority->getAnAdmin(array('"user" =' => $groupname, 'valid =' => 0));
 			if ($groupobj) {
 				$group = NULL;
 				if ($groupobj->getName() != 'template') {
@@ -235,7 +235,7 @@ class federated_logon {
 						$userobj->createPrimealbum();
 					}
 				} else {
-					$groupobj = $_zp_authority->getAnAdmin(array('`user`=' => 'federated_verify', '`valid`=' => 0));
+					$groupobj = $_zp_authority->getAnAdmin(array('"user" =' => 'federated_verify', 'valid =' => 0));
 					if (empty($groupobj)) {
 						$groupobj = Zenphoto_Authority::newAdministrator('federated_verify', 0);
 						$groupobj->setName('group');
@@ -338,10 +338,10 @@ class federated_logon {
 		if (isset($_GET['verify_federated_user'])) {
 			$params = unserialize(pack("H*", trim(sanitize($_GET['verify_federated_user']), '.')));
 			if ((time() - $params['date']) < 2592000) {
-				$userobj = $_zp_authority->getAnAdmin(array('`user`=' => $params['user'], '`email`=' => $params['email'], '`valid`>' => 0));
+				$userobj = $_zp_authority->getAnAdmin(array('"user" =' => $params['user'], 'email =' => $params['email'], 'valid >' => 0));
 				if ($userobj) {
 					$groupname = getOption('federated_login_group');
-					$groupobj = $_zp_authority->getAnAdmin(array('`user`=' => $groupname, '`valid`=' => 0));
+					$groupobj = $_zp_authority->getAnAdmin(array('"user" =' => $groupname, 'valid =' => 0));
 					if ($groupobj) {
 						$userobj->setRights($groupobj->getRights());
 						$userobj->setGroup($groupname);

@@ -105,7 +105,7 @@ function getAuthor($fullname = false) {
 	}
 	if ($obj) {
 		if ($fullname) {
-			$admin = $_zp_authority->getAnAdmin(array('`user`=' => $obj->getAuthor(), '`valid`=' => 1));
+			$admin = $_zp_authority->getAnAdmin(array('"user" =' => $obj->getAuthor(), 'valid =' => 1));
 			if (is_object($admin) && $admin->getName()) {
 				return $admin->getName();
 			}
@@ -1706,13 +1706,13 @@ function getNumPages($total = false) {
 				return count($_zp_CMS_pagelist);
 			} else if (in_context(ZP_ZENPAGE_PAGE)) {
 				if (!zp_loggedin(ADMIN_RIGHTS | ZENPAGE_PAGES_RIGHTS)) {
-					$addquery = ' AND `show` = 1';
+					$addquery = ' AND show = 1';
 				}
 				return db_count('pages', 'WHERE parentid=' . $_zp_current_page->getID() . $addquery);
 			}
 		}
 		if (!zp_loggedin(ADMIN_RIGHTS | ZENPAGE_PAGES_RIGHTS)) {
-			$addquery = ' WHERE `show` = 1';
+			$addquery = ' WHERE show = 1';
 		}
 		return db_count('pages', $addquery);
 	}

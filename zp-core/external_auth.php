@@ -52,7 +52,7 @@ class external_auth {
 		if (!$authorized) { // not logged in via normal zenphoto handling
 			if ($result = $this->user()) {
 				$user = $result['user'];
-				$searchfor = array('`user`=' => $user, '`valid`=' => 1);
+				$searchfor = array('"user" =' => $user, 'valid =' => 1);
 				$userobj = $_zp_authority->getAnAdmin($searchfor);
 				if (!$userobj) {
 					unset($result['id']);
@@ -80,7 +80,7 @@ class external_auth {
 								$objects = array();
 								$groups = $value;
 								foreach ($groups as $key => $group) {
-									$groupobj = $_zp_authority->getAnAdmin(array('`user`=' => $group, '`valid`=' => 0));
+									$groupobj = $_zp_authority->getAnAdmin(array('"user" =' => $group, 'valid =' => 0));
 									if ($groupobj) {
 										$member = true;
 										$rights = $groupobj->getRights() | $rights;
@@ -102,7 +102,7 @@ class external_auth {
 								if (!$member && isset($result['defaultgroup'])) {
 									//	No zenphoto group, use the default group
 									$group = $result['defaultgroup'];
-									$groupobj = $_zp_authority->getAnAdmin(array('`user`=' => $group, '`valid`=' => 0));
+									$groupobj = $_zp_authority->getAnAdmin(array('"user" =' => $group, 'valid =' => 0));
 									if ($groupobj) {
 										$rights = $groupobj->getRights();
 										$objects = $groupobj->getObjects();

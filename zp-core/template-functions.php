@@ -3177,7 +3177,7 @@ function getRandomImages($daily = false) {
 	} else {
 		$imageWhere = " AND " . prefix('images') . ".show=1";
 	}
-	$result = query('SELECT `folder`, `filename` ' .
+	$result = query('SELECT folder, filename ' .
 					' FROM ' . prefix('images') . ', ' . prefix('albums') .
 					' WHERE ' . prefix('albums') . '.folder!="" AND ' . prefix('images') . '.albumid = ' .
 					prefix('albums') . '.id ' . $imageWhere . ' ORDER BY RAND()');
@@ -3500,9 +3500,9 @@ function printAllTagsAs($option, $class = '', $sort = NULL, $counter = FALSE, $l
 function getAllDates($order = 'asc') {
 	$alldates = array();
 	$cleandates = array();
-	$sql = "SELECT `date` FROM " . prefix('images');
+	$sql = "SELECT "date" FROM " . prefix('images');
 	if (!zp_loggedin()) {
-		$sql .= " WHERE `show` = 1";
+		$sql .= " WHERE show = 1";
 	}
 	$hidealbums = getNotViewableAlbums();
 	if (!empty($hidealbums)) {
@@ -3511,7 +3511,7 @@ function getAllDates($order = 'asc') {
 		} else {
 			$sql .= ' AND ';
 		}
-		$sql .= '`albumid` NOT IN (' . implode(',', $hidealbums) . ')';
+		$sql .= 'albumid NOT IN (' . implode(',', $hidealbums) . ')';
 	}
 	$result = query($sql);
 	if ($result) {

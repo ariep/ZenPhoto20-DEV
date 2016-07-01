@@ -34,7 +34,7 @@ if (isset($_GET['action'])) {
 			$groupobj = Zenphoto_Authority::newAdministrator($groupname, 0);
 			$groupobj->remove();
 			// clear out existing user assignments
-			Zenphoto_Authority::updateAdminField('group', NULL, array('`valid`>=' => '1', '`group`=' => $groupname));
+			Zenphoto_Authority::updateAdminField('group', NULL, array('valid >=' => '1', 'group =' => $groupname));
 			header("Location: " . FULLWEBPATH . "/" . ZENFOLDER . '/' . PLUGIN_FOLDER . '/user_groups/user_groups-tab.php?page=users&tab=groups&deleted&subpage=' . $subpage);
 			exitZP();
 		case 'savegroups':
@@ -75,14 +75,14 @@ if (isset($_GET['action'])) {
 								}
 							}
 							//user assignments: first clear out existing ones
-							Zenphoto_Authority::updateAdminField('group', NULL, array('`valid`>=' => '1', '`group`=' => $groupname));
+							Zenphoto_Authority::updateAdminField('group', NULL, array('valid >=' => '1', 'group =' => $groupname));
 							//then add the ones marked
 							$target = 'user_' . $i . '-';
 							foreach ($_POST as $item => $username) {
 								if (strpos($item, $target) !== false) {
 									$username = postIndexDecode(substr(sanitize($item), strlen($target)));
 									//$username = substr($item, strlen($target));
-									$user = $_zp_authority->getAnAdmin(array('`user`=' => $username, '`valid`>=' => 1));
+									$user = $_zp_authority->getAnAdmin(array('"user" =' => $username, 'valid >=' => 1));
 									user_groups::merge_rights($user, $hisgroups, user_groups::getPrimeObjects($user));
 									$user->save();
 								}
@@ -102,7 +102,7 @@ if (isset($_GET['action'])) {
 					if (isset($_POST[$i . 'group'])) {
 						$newgroups = sanitize($_POST[$i . 'group']);
 						$username = trim(sanitize($_POST[$i . '-user'], 3));
-						$userobj = $_zp_authority->getAnAdmin(array('`user`=' => $username, '`valid`>=' => 1));
+						$userobj = $_zp_authority->getAnAdmin(array('"user" =' => $username, 'valid >=' => 1));
 						user_groups::merge_rights($userobj, $newgroups, user_groups::getPrimeObjects($userobj));
 						$userobj->save();
 					}

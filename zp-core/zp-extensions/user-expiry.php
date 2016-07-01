@@ -184,12 +184,12 @@ class user_expiry {
 	}
 
 	static function cleanup($user) {
-		query('DELETE FROM ' . prefix('plugin_storage') . ' WHERE `type`=' . db_quote('user_expiry_usedPasswords') . ' AND `aux`=' . $user->getID());
+		query('DELETE FROM ' . prefix('plugin_storage') . ' WHERE "type" =' . db_quote('user_expiry_usedPasswords') . ' AND "aux" =' . $user->getID());
 	}
 
 	static function passwordAllowed($msg, $pwd, $user) {
 		if ($id = $user->getID() > 0) {
-			$store = query_single_row('SELECT * FROM ' . prefix('plugin_storage') . ' WHERE `type`=' . db_quote('user_expiry_usedPasswords') . ' AND `aux`=' . $id);
+			$store = query_single_row('SELECT * FROM ' . prefix('plugin_storage') . ' WHERE "type" =' . db_quote('user_expiry_usedPasswords') . ' AND "aux" =' . $id);
 			if ($store) {
 				$used = getSerializedArray($store['data']);
 				if (in_array($pwd, $used)) {
@@ -207,9 +207,9 @@ class user_expiry {
 			}
 			array_push($used, $pwd);
 			if ($store) {
-				query('UPDATE ' . prefix('plugin_storage') . 'SET `data`=' . db_quote(serialize($used)) . ' WHERE `type`=' . db_quote('user_expiry_usedPasswords') . ' AND `aux`=' . $id);
+				query('UPDATE ' . prefix('plugin_storage') . 'SET data=' . db_quote(serialize($used)) . ' WHERE "type" =' . db_quote('user_expiry_usedPasswords') . ' AND "aux" =' . $id);
 			} else {
-				query('INSERT INTO ' . prefix('plugin_storage') . ' (`type`, `aux`, `data`) VALUES (' . db_quote('user_expiry_usedPasswords') . ',' . $id . ',' . db_quote(serialize($used)) . ')');
+				query('INSERT INTO ' . prefix('plugin_storage') . ' ("type", "aux", "data") VALUES (' . db_quote('user_expiry_usedPasswords') . ',' . $id . ',' . db_quote(serialize($used)) . ')');
 			}
 		}
 		return $msg;
@@ -227,7 +227,7 @@ class user_expiry {
 		global $_zp_authority;
 		if ($loggedin) {
 			if (!($loggedin & ADMIN_RIGHTS)) {
-				if ($userobj = $_zp_authority->getAnAdmin(array('`user`=' => $user, '`valid`=' => 1))) {
+				if ($userobj = $_zp_authority->getAnAdmin(array('"user" =' => $user, 'valid =' => 1))) {
 					$loggedin = user_expiry::checkexpires($loggedin, $userobj);
 				}
 			}
@@ -246,7 +246,7 @@ class user_expiry {
 		if (isset($_GET['user_expiry_reverify'])) {
 			$params = unserialize(pack("H*", trim(sanitize($_GET['user_expiry_reverify']), '.')));
 			if ((time() - $params['date']) < 2592000) {
-				$userobj = $_zp_authority->getAnAdmin(array('`user`=' => $params['user'], '`email`=' => $params['email'], '`valid`>' => 0));
+				$userobj = $_zp_authority->getAnAdmin(array('"user" =' => $params['user'], 'email =' => $params['email'], 'valid >' => 0));
 				if ($userobj) {
 					$credentials = $userobj->getCredentials();
 					$credentials[] = 'expiry';
@@ -300,7 +300,7 @@ class user_expiry {
 			if (user_expiry::checkPasswordRenew()) {
 				echo '<p class="errorbox">' . gettext('You must change your password.'), '</p>';
 			} else {
-				if ($_zp_authority->getAnAdmin(array('`valid`>' => 1))) {
+				if ($_zp_authority->getAnAdmin(array('valid >' => 1))) {
 					echo '<p class="notebox">' . gettext('You have users whose credentials have expired.'), '</p>';
 				}
 			}

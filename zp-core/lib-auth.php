@@ -33,7 +33,7 @@ class _Authority {
 		}
 		$this->admin_all = $this->admin_groups = $this->admin_users = $this->admin_other = array();
 
-		$sql = 'SELECT * FROM ' . prefix('administrators') . ' ORDER BY `rights` DESC, `id`';
+		$sql = 'SELECT * FROM ' . prefix('administrators') . ' ORDER BY rights DESC, id';
 		$admins = query($sql, false);
 		if ($admins) {
 			while ($user = db_fetch_assoc($admins)) {
@@ -310,7 +310,7 @@ class _Authority {
 			debugLogVar("checkAuthorization: admins", $admins);
 		}
 		$rights = 0;
-		$criteria = array('`pass`=' => $authCode, '`id`=' => (int) $id, '`valid`=' => 1);
+		$criteria = array('pass =' => $authCode, 'id =' => (int) $id, 'valid =' => 1);
 		$user = $this->getAnAdmin($criteria);
 		if (is_object($user)) {
 			$_zp_current_admin_obj = $user;
@@ -337,7 +337,7 @@ class _Authority {
 	 * @return object
 	 */
 	function checkLogon($user, $pass) {
-		$userobj = $this->getAnAdmin(array('`user`=' => $user, '`valid`=' => 1));
+		$userobj = $this->getAnAdmin(array('"user" =' => $user, 'valid =' => 1));
 		if ($userobj) {
 			$hash = self::passwordHash($user, $pass, $userobj->get('passhash'));
 			if ($hash != $userobj->getPass()) {
@@ -407,7 +407,7 @@ class _Authority {
 		$oldversion = self::getVersion();
 		setOption('libauth_version', $to);
 		$this->admin_users = array();
-		$sql = "SELECT * FROM " . prefix('administrators') . "ORDER BY `rights` DESC, `id`";
+		$sql = "SELECT * FROM " . prefix('administrators') . "ORDER BY rights DESC, id";
 		$admins = query($sql, false);
 		if ($admins) { // something to migrate
 			$oldrights = array();
@@ -466,7 +466,7 @@ class _Authority {
 					}
 				}
 
-				$sql = 'UPDATE ' . prefix('administrators') . ' SET `rights`=' . $newrights . ' WHERE `id`=' . $user['id'];
+				$sql = 'UPDATE ' . prefix('administrators') . ' SET rights =' . $newrights . ' WHERE id =' . $user['id'];
 				$success = $success && query($sql);
 			} // end loop
 			db_free_result($admins);
@@ -498,7 +498,7 @@ class _Authority {
 		} else {
 			$value = db_quote($value);
 		}
-		$sql = 'UPDATE ' . prefix('administrators') . ' SET `' . $update . '`=' . $value . ' WHERE ' . $where;
+		$sql = 'UPDATE ' . prefix('administrators') . ' SET "' . $update . '"=' . $value . ' WHERE ' . $where;
 		$result = query($sql);
 		return $result;
 	}
@@ -702,7 +702,7 @@ class _Authority {
 					}
 					break;
 				case 'challenge':
-					$user = $this->getAnAdmin(array('`user`=' => $post_user, '`valid`=' => 1));
+					$user = $this->getAnAdmin(array('"user" =' => $post_user, 'valid =' => 1));
 					if (is_object($user)) {
 						$info = $user->getChallengePhraseInfo();
 						if ($post_pass && $info['response'] == $post_pass) {
@@ -872,7 +872,7 @@ class _Authority {
 		$mails = array();
 		$info = array('challenge' => '', 'response' => '');
 		if (!empty($requestor)) {
-			if ($admin = $this->getAnAdmin(array('`user`=' => $requestor, '`valid`=' => 1))) {
+			if ($admin = $this->getAnAdmin(array('"user" =' => $requestor, 'valid =' => 1))) {
 				$info = $admin->getChallengePhraseInfo();
 			} else {
 				$info = array('challenge' => '');
@@ -883,7 +883,7 @@ class _Authority {
 				foreach (getSerializedArray(getOption('challenge_foils')) as $question) {
 					$questions[] = get_language_string($question);
 				}
-				$rslt = query('SELECT `challenge_phrase`,`language` FROM ' . prefix('administrators') . ' WHERE `challenge_phrase` IS NOT NULL');
+				$rslt = query('SELECT challenge_phrase,language FROM ' . prefix('administrators') . ' WHERE challenge_phrase IS NOT NULL');
 				while ($row = db_fetch_assoc($rslt)) {
 					if (is_null($row['language']) || $row['language'] == $locale) {
 						$q = getSerializedArray($row['challenge_phrase']);
@@ -1621,7 +1621,7 @@ class _Administrator extends PersistentObject {
 
 		$id = $this->getID();
 		if (is_array($objects)) {
-			$sql = "DELETE FROM " . prefix('admin_to_object') . ' WHERE `adminid`=' . $id;
+			$sql = "DELETE FROM " . prefix('admin_to_object') . ' WHERE adminid =' . $id;
 			$result = query($sql, false);
 			foreach ($objects as $object) {
 				$edit = MANAGED_OBJECT_MEMBER;
@@ -1636,7 +1636,7 @@ class _Administrator extends PersistentObject {
 						$result = query($sql);
 						break;
 					case 'pages':
-						$sql = 'SELECT * FROM ' . prefix('pages') . ' WHERE `titlelink`=' . db_quote($object['data']);
+						$sql = 'SELECT * FROM ' . prefix('pages') . ' WHERE titlelink =' . db_quote($object['data']);
 						$result = query_single_row($sql);
 						if (is_array($result)) {
 							$objectid = $result['id'];
@@ -1648,7 +1648,7 @@ class _Administrator extends PersistentObject {
 						if ($object['data'] == '`') {
 							$result = array('id' => 0);
 						} else {
-							$sql = 'SELECT * FROM ' . prefix('news_categories') . ' WHERE `titlelink`=' . db_quote($object['data']);
+							$sql = 'SELECT * FROM ' . prefix('news_categories') . ' WHERE titlelink =' . db_quote($object['data']);
 							$result = query_single_row($sql);
 						}
 						if (is_array($result)) {
@@ -1673,7 +1673,7 @@ class _Administrator extends PersistentObject {
 			if (!empty($album)) { //	Remove users album as well
 				$album->remove();
 			}
-			$sql = "DELETE FROM " . prefix('admin_to_object') . " WHERE `adminid`=$id";
+			$sql = "DELETE FROM " . prefix('admin_to_object') . " WHERE adminid =$id";
 			$result = query($sql);
 		} else {
 			return false;
@@ -1687,7 +1687,7 @@ class _Administrator extends PersistentObject {
 	function getAlbum() {
 		$id = $this->get('prime_album');
 		if (!empty($id)) {
-			$sql = 'SELECT `folder` FROM ' . prefix('albums') . ' WHERE `id`=' . $id;
+			$sql = 'SELECT folder FROM ' . prefix('albums') . ' WHERE id =' . $id;
 			$result = query_single_row($sql);
 			if ($result) {
 				$album = newAlbum($result['folder']);

@@ -36,26 +36,26 @@ class userAddressFields extends fieldExtender {
 
 		parent::constructor('userAddressFields', self::fields());
 		if ($firstTime) { //	migrate the custom data user data
-			$result = query('SELECT * FROM ' . prefix('administrators') . ' WHERE `valid`!=0');
+			$result = query('SELECT * FROM ' . prefix('administrators') . ' WHERE valid !=0');
 			if ($result) {
 				while ($row = db_fetch_assoc($result)) {
 					$custom = getSerializedArray($row['custom_data']);
 					if (!empty($custom)) {
 						$sql = 'UPDATE ' . prefix('administrators') . ' SET ';
 						foreach ($custom as $field => $val) {
-							$sql.= '`' . $field . '`=' . db_quote($val) . ',';
+							$sql.= '"' . $field . '" = ' . db_quote($val) . ',';
 						}
 						setupQuery($sql);
 					}
 				}
 				db_free_result($result);
 			}
-			setupQuery('ALTER TABLE ' . prefix('administrators') . ' DROP `custom_data`');
+			setupQuery('ALTER TABLE ' . prefix('administrators') . ' DROP custom_data');
 		}
 		$cloneid = bin2hex(FULLWEBPATH);
 		if (OFFSET_PATH == 2 && isset($_SESSION['admin'][$cloneid])) {
 			$user = unserialize($_SESSION['admin'][$cloneid]);
-			$user2 = $_zp_authority->getAnAdmin(array('`user`=' => $user->getUser(), '`pass`=' => $user->getPass(), '`valid`=' => 1));
+			$user2 = $_zp_authority->getAnAdmin(array('"user" =' => $user->getUser(), 'pass =' => $user->getPass(), 'valid =' => 1));
 			if ($user2) {
 				foreach (userAddressFields::fields() as $field) {
 					$user2->set($field['name'], $user->get($field['name']));

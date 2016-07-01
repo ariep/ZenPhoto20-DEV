@@ -104,7 +104,7 @@ class http_auth {
 				$user = $_SERVER['PHP_AUTH_USER'];
 				$pass = $_SERVER['PHP_AUTH_PW'];
 				if (getOption('http_auth_trust')) {
-					$userobj = $_zp_authority->getAnAdmin(array('`user`=' => $user, '`valid`=' => 1));
+					$userobj = $_zp_authority->getAnAdmin(array('"user" =' => $user, 'valid =' => 1));
 				} else {
 					$userobj = Zenphoto_Authority::checkLogon($user, $pass);
 				}

@@ -255,7 +255,7 @@ class security_logger {
 		}
 		$name = '';
 		if ($success) {
-			$admin = $_zp_authority->getAnAdmin(array('`user`=' => $user, '`valid`=' => 1));
+			$admin = $_zp_authority->getAnAdmin(array('"user" =' => $user, 'valid =' => 1));
 			$pass = ''; // mask it from display
 			if (is_object($admin)) {
 				$name = $admin->getName();
@@ -304,7 +304,7 @@ class security_logger {
 		}
 		$name = '';
 		if ($success) {
-			$admin = $_zp_authority->getAnAdmin(array('`user`=' => $user, '`valid`=' => 1));
+			$admin = $_zp_authority->getAnAdmin(array('"user" =' => $user, 'valid =' => 1));
 			$pass = ''; // mask it from display
 			if (is_object($admin)) {
 				$name = $admin->getName();
