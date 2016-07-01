@@ -199,7 +199,7 @@ class PersistentObject {
 			foreach (array_keys($insert_data) as $col) {
 				if ($i > 0)
 					$sql .= ", ";
-				$sql .= db_field($col);
+				$sql .= '\"' . $col . '\"';
 				$i++;
 			}
 			$sql .= ') VALUES (';
@@ -367,7 +367,7 @@ class PersistentObject {
 					$cols .= ", ";
 					$vals .= ", ";
 				}
-				$cols .= "`$col`";
+				$cols .= '\"' . $col . '\"';
 				if (is_null($value)) {
 					$vals .= "NULL";
 				} else {
