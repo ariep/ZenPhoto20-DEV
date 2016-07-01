@@ -36,7 +36,7 @@ setOption('adminTagsTab', 0);
 Query('UPDATE ' . prefix('options') . ' SET theme = \'\' WHERE theme IS NULL');
 
 //clean up tag list quoted strings
-$sql = 'SELECT * FROM ' . prefix('tags') . ' WHERE name LIKE \'"%\' OR name LIKE \'\\\'%\';';
+$sql = 'SELECT * FROM ' . prefix('tags') . ' WHERE name LIKE \'"%\' OR name LIKE \'\'\'%\';';
 $result = query($sql);
 if ($result) {
 	while ($row = db_fetch_assoc($result)) {
