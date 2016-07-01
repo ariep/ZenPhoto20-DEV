@@ -3500,7 +3500,7 @@ function printAllTagsAs($option, $class = '', $sort = NULL, $counter = FALSE, $l
 function getAllDates($order = 'asc') {
 	$alldates = array();
 	$cleandates = array();
-	$sql = "SELECT "date" FROM " . prefix('images');
+	$sql = "SELECT \"date\" FROM " . prefix('images');
 	if (!zp_loggedin()) {
 		$sql .= " WHERE show = 1";
 	}
