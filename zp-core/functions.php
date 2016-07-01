@@ -282,8 +282,8 @@ function lookupSortKey($sorttype, $default, $table) {
 			$list = explode(',', $sorttype);
 			$rslt = array();
 			foreach ($list as $key => $field) {
-				if (array_key_exists($field = trim($field, '`'), $dbfields)) {
-					$rslt[] = '`' . trim($dbfields[$field]) . '`';
+				if (array_key_exists($field = trim($field, '"'), $dbfields)) {
+					$rslt[] = '"' . trim($dbfields[$field]) . '"';
 				}
 			}
 			if (empty($rslt)) {
@@ -724,9 +724,9 @@ function fetchComments($number) {
 				}
 			}
 			if (count($albumIDs) > 0) {
-				$sql = "SELECT  *, (`date` + 0) AS date FROM " . prefix('comments') . " WHERE ";
+				$sql = "SELECT  *, (\"date\" + 0) AS date FROM " . prefix('comments') . " WHERE ";
 
-				$sql .= " (`type`='albums' AND (";
+				$sql .= " (\"type\" = 'albums' AND (";
 				$i = 0;
 				foreach ($albumIDs as $ID) {
 					if ($i > 0) {
@@ -746,11 +746,11 @@ function fetchComments($number) {
 				}
 				$sql = "SELECT *, " . prefix('comments') . ".id as id, " .
 								prefix('comments') . ".name as name, (" . prefix('comments') . ".date + 0) AS date, " .
-								prefix('images') . ".`albumid` as albumid," .
-								prefix('images') . ".`id` as imageid" .
+								prefix('images') . ".albumid as albumid," .
+								prefix('images') . ".id as imageid" .
 								" FROM " . prefix('comments') . "," . prefix('images') . " WHERE ";
 
-				$sql .= "(`type` IN (" . zp_image_types("'") . ") AND (";
+				$sql .= "(\"type\" IN (" . zp_image_types("'") . ") AND (";
 				$i = 0;
 				foreach ($albumIDs as $ID) {
 					if ($i > 0) {
@@ -760,7 +760,7 @@ function fetchComments($number) {
 					$i++;
 				}
 				$sql .= "))";
-				$sql .= " ORDER BY " . prefix('images') . ".`id` DESC$limit";
+				$sql .= " ORDER BY " . prefix('images') . ".id DESC$limit";
 				$imagecomments = query($sql);
 				if ($imagecomments) {
 					while ($comment = db_fetch_assoc($imagecomments)) {
@@ -788,7 +788,7 @@ function getManagedAlbumList() {
 	global $_zp_admin_album_list, $_zp_current_admin_obj;
 	$_zp_admin_album_list = array();
 	if (zp_loggedin(MANAGE_ALL_ALBUM_RIGHTS)) {
-		$sql = "SELECT `folder` FROM " . prefix('albums') . ' WHERE `parentid` IS NULL';
+		$sql = "SELECT folder FROM " . prefix('albums') . ' WHERE parentid IS NULL';
 		$albums = query($sql);
 		if ($albums) {
 			while ($album = db_fetch_assoc($albums)) {
@@ -824,7 +824,7 @@ function populateManagedObjectsList($type, $id, $rights = false) {
 	}
 	$cv = array();
 	if (empty($type) || substr($type, 0, 5) == 'album') {
-		$sql = "SELECT " . prefix('albums') . ".`folder`," . prefix('albums') . ".`title`," . prefix('admin_to_object') . ".`edit` FROM " . prefix('albums') . ", " .
+		$sql = "SELECT " . prefix('albums') . ".folder," . prefix('albums') . ".title," . prefix('admin_to_object') . ".edit FROM " . prefix('albums') . ", " .
 						prefix('admin_to_object') . " WHERE " . prefix('admin_to_object') . ".adminid=" . $id .
 						" AND " . prefix('albums') . ".id=" . prefix('admin_to_object') . ".objectid AND " . prefix('admin_to_object') . ".type LIKE 'album%'";
 		$currentvalues = query($sql, false);
@@ -842,7 +842,7 @@ function populateManagedObjectsList($type, $id, $rights = false) {
 		}
 	}
 	if (empty($type) || $type == 'pages') {
-		$sql = 'SELECT ' . prefix('pages') . '.`title`,' . prefix('pages') . '.`titlelink`, ' . prefix('admin_to_object') . '.`edit` FROM ' . prefix('pages') . ', ' . prefix('admin_to_object') . " WHERE " . prefix('admin_to_object') . ".adminid=" . $id . " AND " . prefix('pages') . ".id=" . prefix('admin_to_object') . ".objectid AND " . prefix('admin_to_object') . ".type='pages'";
+		$sql = 'SELECT ' . prefix('pages') . '.title,' . prefix('pages') . '.titlelink, ' . prefix('admin_to_object') . '.edit FROM ' . prefix('pages') . ', ' . prefix('admin_to_object') . " WHERE " . prefix('admin_to_object') . ".adminid=" . $id . " AND " . prefix('pages') . ".id=" . prefix('admin_to_object') . ".objectid AND " . prefix('admin_to_object') . ".type='pages'";
 		$currentvalues = query($sql, true);
 		if ($currentvalues) {
 			while ($item = db_fetch_assoc($currentvalues)) {
@@ -856,7 +856,7 @@ function populateManagedObjectsList($type, $id, $rights = false) {
 		}
 	}
 	if (empty($type) || $type == 'news') {
-		$sql = 'SELECT ' . prefix('news_categories') . '.`titlelink`,' . prefix('news_categories') . '.`title`, ' . prefix('admin_to_object') . '.`edit` FROM ' . prefix('news_categories') . ', ' .
+		$sql = 'SELECT ' . prefix('news_categories') . '.titlelink,' . prefix('news_categories') . '.title, ' . prefix('admin_to_object') . '.edit FROM ' . prefix('news_categories') . ', ' .
 						prefix('admin_to_object') . " WHERE " . prefix('admin_to_object') . ".adminid=" . $id .
 						" AND " . prefix('news_categories') . ".id=" . prefix('admin_to_object') . ".objectid AND " . prefix('admin_to_object') . ".type='news'";
 		$currentvalues = query($sql, false);
@@ -870,7 +870,7 @@ function populateManagedObjectsList($type, $id, $rights = false) {
 			}
 			db_free_result($currentvalues);
 		}
-		$item = query_single_row('SELECT `edit` FROM ' . prefix('admin_to_object') . "WHERE adminid=$id AND objectid=0 AND type='news'", false);
+		$item = query_single_row('SELECT edit FROM ' . prefix('admin_to_object') . "WHERE adminid=$id AND objectid=0 AND type='news'", false);
 		if ($item) {
 			$cv[] = array('data' => '`', 'name' => '"' . gettext('un-categorized') . '"', 'type' => 'news', 'edit' => (int) $item['edit']);
 		}
@@ -892,7 +892,7 @@ function getAllSubAlbumIDs($albumfolder = '') {
 			return null;
 		}
 	}
-	$query = "SELECT `id`,`folder`, `show` FROM " . prefix('albums') . " WHERE `folder` LIKE " . db_quote(db_LIKE_escape($albumfolder) . '%');
+	$query = "SELECT id,folder, show FROM " . prefix('albums') . " WHERE folder LIKE " . db_quote(db_LIKE_escape($albumfolder) . '%');
 	$subIDs = query_full_array($query);
 	return $subIDs;
 }
@@ -990,7 +990,7 @@ function handleSearchParms($what, $album = NULL, $image = NULL) {
  */
 function updatePublished($table) {
 	//publish items that have matured
-	$sql = 'SELECT * FROM ' . prefix($table) . ' WHERE `show`=0 AND `publishdate`IS NOT NULL AND `publishdate`<=' . db_quote(date('Y-m-d H:i:s'));
+	$sql = 'SELECT * FROM ' . prefix($table) . ' WHERE show=0 AND publishdateIS NOT NULL AND publishdate<=' . db_quote(date('Y-m-d H:i:s'));
 	$result = query($sql);
 	if ($result) {
 		while ($row = db_fetch_assoc($result)) {
@@ -1001,7 +1001,7 @@ function updatePublished($table) {
 	}
 
 	//unpublish items that have expired or are not yet published
-	$sql = 'SELECT * FROM ' . prefix($table) . ' WHERE `show`=1 AND (`expiredate` IS NOT NULL AND `expiredate`<' . db_quote(date('Y-m-d H:i:s')) . ' OR `publishdate`>' . db_quote(date('Y-m-d H:i:s')) . ')';
+	$sql = 'SELECT * FROM ' . prefix($table) . ' WHERE show=1 AND (expiredate IS NOT NULL AND expiredate<' . db_quote(date('Y-m-d H:i:s')) . ' OR publishdate>' . db_quote(date('Y-m-d H:i:s')) . ')';
 	$result = query($sql);
 	if ($result) {
 		while ($row = db_fetch_assoc($result)) {
@@ -1089,7 +1089,7 @@ define('SELECT_ARTICLES', 8);
  * value passed.
  *
  * If the site visitor is not logged in this function returns only tags associated
- * with "published" objects. However, the publish state is limited to the `show` column
+ * with "published" objects. However, the publish state is limited to the "show" column
  * of the object. This is not totally "correct", however the computatioal intensity
  * of returning only that might link to "visible" objects is prohibitive.
  *
@@ -1133,9 +1133,9 @@ function getAllTagsUnique($language = NULL, $count = 1, $returnCount = NULL) {
 			// create a table of only "published" tag assignments
 			$source = 'taglist';
 			query('CREATE TEMPORARY TABLE IF NOT EXISTS taglist (
-														`tagid` int(11) UNSIGNED NOT NULL,
-														`type` tinytext,
-														`objectid` int(11) UNSIGNED NOT NULL,
+														tagid int(11) UNSIGNED NOT NULL,
+														"type" tinytext,
+														objectid int(11) UNSIGNED NOT NULL,
 														KEY (tagid),
 														KEY (objectid)
 														) CHARACTER SET utf8 COLLATE utf8_unicode_ci');
@@ -1202,29 +1202,29 @@ function storeTags($tags, $id, $tbl) {
 				}
 			}
 		}
-		$sql = "SELECT `id`, `tagid` from " . prefix('obj_to_tag') . " WHERE `objectid`='" . $id . "' AND `type`='" . $tbl . "'";
+		$sql = "SELECT id, tagid from " . prefix('obj_to_tag') . " WHERE objectid='" . $id . "' AND \"type\"='" . $tbl . "'";
 		$result = query($sql);
 		$existing = array();
 		if ($result) {
 			while ($row = db_fetch_assoc($result)) {
-				$dbtag = query_single_row("SELECT `name` FROM " . prefix('tags') . " WHERE `id`='" . $row['tagid'] . "'");
+				$dbtag = query_single_row("SELECT name FROM " . prefix('tags') . " WHERE id='" . $row['tagid'] . "'");
 				$existingLC = mb_strtolower($dbtag['name']);
 				if (in_array($existingLC, $tagsLC)) { // tag already set no action needed
 					$existing[] = $existingLC;
 				} else { // tag no longer set, remove it
-					query("DELETE FROM " . prefix('obj_to_tag') . " WHERE `id`='" . $row['id'] . "'");
+					query("DELETE FROM " . prefix('obj_to_tag') . " WHERE id='" . $row['id'] . "'");
 				}
 			}
 			db_free_result($result);
 		}
 		$tags = array_diff($tagsLC, $existing); // new tags for the object
 		foreach ($tags as $key => $tag) {
-			$dbtag = query_single_row("SELECT `id` FROM " . prefix('tags') . " WHERE `name`=" . db_quote($key));
+			$dbtag = query_single_row("SELECT id FROM " . prefix('tags') . " WHERE name=" . db_quote($key));
 			if (!is_array($dbtag)) { // tag does not exist
 				query('INSERT INTO ' . prefix('tags') . ' (name) VALUES (' . db_quote($key) . ')', false);
 				$dbtag = array('id' => db_insert_id());
 			}
-			query("INSERT INTO " . prefix('obj_to_tag') . "(`objectid`, `tagid`, `type`) VALUES (" . $id . "," . $dbtag['id'] . ",'" . $tbl . "')");
+			query("INSERT INTO " . prefix('obj_to_tag') . "(objectid, tagid, \"type\") VALUES (" . $id . "," . $dbtag['id'] . ",'" . $tbl . "')");
 		}
 	}
 }
@@ -1255,7 +1255,7 @@ function readTags($id, $tbl, $language) {
 
 	$tags = array();
 
-	$sql = 'SELECT * FROM ' . prefix('tags') . ' AS tags, ' . prefix('obj_to_tag') . ' AS objects WHERE `type`="' . $tbl . '" AND `objectid`="' . $id . '" AND tagid=tags.id';
+	$sql = 'SELECT * FROM ' . prefix('tags') . ' AS tags, ' . prefix('obj_to_tag') . ' AS objects WHERE "type"="' . $tbl . '" AND objectid="' . $id . '" AND tagid=tags.id';
 
 	if ($language) {
 		$sql .= ' AND (tags.language="" OR tags.language LIKE ' . db_quote(db_LIKE_escape($language) . '%') . ')';
@@ -1401,7 +1401,7 @@ function shuffle_assoc(&$array) {
  * @param string $order
  */
 function sortByKey($results, $sortkey, $order) {
-	$sortkey = str_replace('`', '', $sortkey);
+	$sortkey = str_replace('"', '', $sortkey);
 	switch ($sortkey) {
 		case 'title':
 		case 'desc':
@@ -1498,7 +1498,7 @@ function getNotViewableAlbums() {
 	if (zp_loggedin(ADMIN_RIGHTS | MANAGE_ALL_ALBUM_RIGHTS))
 		return array(); //admins can see all
 	if (is_null($_zp_not_viewable_album_list)) {
-		$sql = 'SELECT `folder`, `id` FROM ' . prefix('albums');
+		$sql = 'SELECT folder, id FROM ' . prefix('albums');
 		$result = query($sql);
 		if ($result) {
 			$_zp_not_viewable_album_list = array();
@@ -1772,7 +1772,7 @@ function zp_handle_password($authType = NULL, $check_auth = NULL, $check_user = 
 					$parentID = $pageobj->getParentID();
 					if ($parentID == 0)
 						break;
-					$sql = 'SELECT `titlelink` FROM ' . prefix('pages') . ' WHERE `id`=' . $parentID;
+					$sql = 'SELECT titlelink FROM ' . prefix('pages') . ' WHERE id=' . $parentID;
 					$result = query_single_row($sql);
 					$pageobj = new Page($result['titlelink']);
 					$authType = "zp_page_auth_" . $pageobj->getID();
@@ -1853,7 +1853,7 @@ function zp_handle_password($authType = NULL, $check_auth = NULL, $check_user = 
  * @param string $key
  */
 function getOptionFromDB($key) {
-	$sql = "SELECT `value` FROM " . prefix('options') . " WHERE `name`=" . db_quote($key) . " AND `ownerid`=0";
+	$sql = "SELECT value FROM " . prefix('options') . " WHERE name=" . db_quote($key) . " AND ownerid=0";
 	$optionlist = query_single_row($sql, false);
 	return @$optionlist['value'];
 }
@@ -1877,8 +1877,8 @@ function setThemeOption($key, $value, $album, $theme, $default = false) {
 	}
 	$creator = THEMEFOLDER . '/' . $theme;
 
-	$sql = 'INSERT INTO ' . prefix('options') . ' (`name`,`ownerid`,`theme`,`creator`,`value`) VALUES (' . db_quote($key) . ',0,' . db_quote($theme) . ',' . db_quote($creator) . ',';
-	$sqlu = ' ON DUPLICATE KEY UPDATE `value`=';
+	$sql = 'INSERT INTO ' . prefix('options') . ' (name,ownerid,theme,creator,value) VALUES (' . db_quote($key) . ',0,' . db_quote($theme) . ',' . db_quote($creator) . ',';
+	$sqlu = ' ON DUPLICATE KEY UPDATE value=';
 	if (is_null($value)) {
 		$sql .= 'NULL';
 		$sqlu .= 'NULL';
@@ -1933,15 +1933,15 @@ function getThemeOption($option, $album = NULL, $theme = NULL) {
 		$theme = $_zp_gallery->getCurrentTheme();
 	}
 	// album-theme
-	$sql = "SELECT `value` FROM " . prefix('options') . " WHERE `name`=" . db_quote($option) . " AND `ownerid`=" . $id . " AND `theme`=" . db_quote($theme);
+	$sql = "SELECT value FROM " . prefix('options') . " WHERE name=" . db_quote($option) . " AND ownerid=" . $id . " AND theme=" . db_quote($theme);
 	$db = query_single_row($sql);
 	if (!$db) {
 		// raw theme option
-		$sql = "SELECT `value` FROM " . prefix('options') . " WHERE `name`=" . db_quote($option) . " AND `ownerid`=0 AND `theme`=" . db_quote($theme);
+		$sql = "SELECT value FROM " . prefix('options') . " WHERE name=" . db_quote($option) . " AND ownerid=0 AND theme=" . db_quote($theme);
 		$db = query_single_row($sql);
 		if (!$db) {
 			// raw album option
-			$sql = "SELECT `value` FROM " . prefix('options') . " WHERE `name`=" . db_quote($option) . " AND `ownerid`=" . $id . " AND `theme`=NULL";
+			$sql = "SELECT value FROM " . prefix('options') . " WHERE name=" . db_quote($option) . " AND ownerid=" . $id . " AND theme=NULL";
 			$db = query_single_row($sql);
 			if (!$db) {
 				return getOption($option);

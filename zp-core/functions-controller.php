@@ -338,7 +338,7 @@ function load_zenpage_news($request) {
 	}
 	if (isset($request['title'])) {
 		$titlelink = sanitize(rtrim($request['title'], '/'));
-		$sql = 'SELECT `id` FROM ' . prefix('news') . ' WHERE `titlelink`=' . db_quote($titlelink);
+		$sql = 'SELECT id FROM ' . prefix('news') . ' WHERE titlelink=' . db_quote($titlelink);
 		$result = query_single_row($sql);
 		if (is_array($result)) {
 			add_context(ZP_ZENPAGE_NEWS_ARTICLE | ZP_ZENPAGE_SINGLE);

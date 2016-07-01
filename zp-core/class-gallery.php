@@ -278,7 +278,7 @@ class Gallery {
 		} else {
 			$sql = '';
 			if ($publishedOnly) {
-				$sql = 'WHERE `show`=1';
+				$sql = 'WHERE show=1';
 			}
 			$count = db_count('albums', $sql);
 		}
@@ -353,15 +353,15 @@ class Gallery {
 				return db_count('images', '');
 				break;
 			case 1:
-				$rows = query("SELECT `id` FROM " . prefix('albums') . " WHERE `show`=0");
+				$rows = query("SELECT id FROM " . prefix('albums') . " WHERE show=0");
 				$idlist = array();
-				$exclude = 'WHERE `show`=1';
+				$exclude = 'WHERE show=1';
 				if ($rows) {
 					while ($row = db_fetch_assoc($rows)) {
 						$idlist[] = $row['id'];
 					}
 					if (!empty($idlist)) {
-						$exclude .= ' AND `albumid` NOT IN (' . implode(',', $idlist) . ')';
+						$exclude .= ' AND albumid NOT IN (' . implode(',', $idlist) . ')';
 					}
 					db_free_result($rows);
 				}
@@ -402,7 +402,7 @@ class Gallery {
 	function getNumComments($moderated = false) {
 		$sql = '';
 		if (!$moderated) {
-			$sql = "WHERE `inmoderation`=0";
+			$sql = "WHERE inmoderation=0";
 		}
 		return db_count('comments', $sql);
 	}
@@ -425,7 +425,7 @@ class Gallery {
 			/* purge old search cache items */
 			$sql = 'DELETE FROM ' . prefix('search_cache');
 			if (!$complete) {
-				$sql .= ' WHERE `date`<' . db_quote(date('Y-m-d H:m:s', time() - SEARCH_CACHE_DURATION * 60));
+				$sql .= ' WHERE "date"<' . db_quote(date('Y-m-d H:m:s', time() - SEARCH_CACHE_DURATION * 60));
 			}
 			$result = query($sql);
 
@@ -440,11 +440,11 @@ class Gallery {
 			if ($result) {
 				while ($row = db_fetch_assoc($result)) {
 					$tbl = $row['type'];
-					$dbtag = query_single_row("SELECT `id` FROM " . prefix('tags') . " WHERE `id`='" . $row['tagid'] . "'", false);
+					$dbtag = query_single_row("SELECT id FROM " . prefix('tags') . " WHERE id='" . $row['tagid'] . "'", false);
 					if (!$dbtag) {
 						$dead[] = $row['id'];
 					}
-					$dbtag = query_single_row("SELECT `id` FROM " . prefix($tbl) . " WHERE `id`='" . $row['objectid'] . "'", false);
+					$dbtag = query_single_row("SELECT id FROM " . prefix($tbl) . " WHERE id='" . $row['objectid'] . "'", false);
 					if (!$dbtag) {
 						$dead[] = $row['id'];
 					}
@@ -453,7 +453,7 @@ class Gallery {
 			}
 			if (!empty($dead)) {
 				$dead = array_unique($dead);
-				query('DELETE FROM ' . prefix('obj_to_tag') . ' WHERE `id`=' . implode(' OR `id`=', $dead));
+				query('DELETE FROM ' . prefix('obj_to_tag') . ' WHERE id=' . implode(' OR id=', $dead));
 			}
 			// clean up admin_to_object
 			$dead = array();
@@ -464,7 +464,7 @@ class Gallery {
 						$dead[] = $row['id'];
 					}
 					$tbl = $row['type'];
-					$dbtag = query_single_row("SELECT `id` FROM " . prefix($tbl) . " WHERE `id`='" . $row['objectid'] . "'", false);
+					$dbtag = query_single_row("SELECT id FROM " . prefix($tbl) . " WHERE id='" . $row['objectid'] . "'", false);
 					if (!$dbtag) {
 						$dead[] = $row['id'];
 					}
@@ -473,18 +473,18 @@ class Gallery {
 			}
 			if (!empty($dead)) {
 				$dead = array_unique($dead);
-				query('DELETE FROM ' . prefix('admin_to_object') . ' WHERE `id`=' . implode(' OR `id`=', $dead));
+				query('DELETE FROM ' . prefix('admin_to_object') . ' WHERE id=' . implode(' OR id=', $dead));
 			}
 			// clean up news2cat
 			$dead = array();
 			$result = query("SELECT * FROM " . prefix('news2cat'));
 			if ($result) {
 				while ($row = db_fetch_assoc($result)) {
-					$dbtag = query_single_row("SELECT `id` FROM " . prefix('news') . " WHERE `id`='" . $row['news_id'] . "'", false);
+					$dbtag = query_single_row("SELECT id FROM " . prefix('news') . " WHERE id='" . $row['news_id'] . "'", false);
 					if (!$dbtag) {
 						$dead[] = $row['id'];
 					}
-					$dbtag = query_single_row("SELECT `id` FROM " . prefix('news_categories') . " WHERE `id`='" . $row['cat_id'] . "'", false);
+					$dbtag = query_single_row("SELECT id FROM " . prefix('news_categories') . " WHERE id='" . $row['cat_id'] . "'", false);
 					if (!$dbtag) {
 						$dead[] = $row['id'];
 					}
@@ -493,7 +493,7 @@ class Gallery {
 			}
 			if (!empty($dead)) {
 				$dead = array_unique($dead);
-				query('DELETE FROM ' . prefix('news2cat') . ' WHERE `id`=' . implode(' OR `id`=', $dead));
+				query('DELETE FROM ' . prefix('news2cat') . ' WHERE id=' . implode(' OR id=', $dead));
 			}
 
 			// Check for the existence albums
@@ -509,7 +509,7 @@ class Gallery {
 				$illegal = $albumpath != $albumpath_valid;
 				$valid = file_exists(ALBUM_FOLDER_SERVERPATH . $albumpath_valid) && (hasDynamicAlbumSuffix($albumpath_valid) || is_dir(ALBUM_FOLDER_SERVERPATH . $albumpath_valid));
 				if ($valid && $illegal) { // maybe there is only one record so we can fix it.
-					$valid = query('UPDATE ' . prefix('albums') . ' SET `folder`=' . db_quote($albumpath_valid) . ' WHERE `id`=' . $row['id'], false);
+					$valid = query('UPDATE ' . prefix('albums') . ' SET folder=' . db_quote($albumpath_valid) . ' WHERE id=' . $row['id'], false);
 					debugLog(sprintf(gettext('Invalid album folder: %1$s %2$s'), $albumpath, $valid ? gettext('fixed') : gettext('discarded')));
 				}
 				if (!$valid || in_array($row['folder'], $live)) {
@@ -527,20 +527,20 @@ class Gallery {
 				asort($dead);
 				$criteria = '(' . implode(',', $dead) . ')';
 				$first = array_pop($dead);
-				$sql1 = "DELETE FROM " . prefix('albums') . " WHERE `id` IN $criteria";
+				$sql1 = "DELETE FROM " . prefix('albums') . " WHERE id IN $criteria";
 				$n = query($sql1);
 				if (!$complete && $n && $cascade) {
-					$sql2 = "DELETE FROM " . prefix('images') . " WHERE `albumid` IN $criteria";
+					$sql2 = "DELETE FROM " . prefix('images') . " WHERE albumid IN $criteria";
 					query($sql2);
-					$sql3 = "DELETE FROM " . prefix('comments') . " WHERE `type`='albums' AND `ownerid` IN $criteria";
+					$sql3 = "DELETE FROM " . prefix('comments') . " WHERE \"type\" = 'albums' AND ownerid IN $criteria";
 					query($sql3);
-					$sql4 = "DELETE FROM " . prefix('obj_to_tag') . " WHERE `type`='albums' AND `objectid` IN $criteria";
+					$sql4 = "DELETE FROM " . prefix('obj_to_tag') . " WHERE \"type\"='albums' AND objectid IN $criteria";
 					query($sql4);
 				}
 			}
 			if (count($deadalbumthemes) > 0) { // delete the album theme options tables for dead albums
 				foreach ($deadalbumthemes as $id => $deadtable) {
-					$sql = 'DELETE FROM ' . prefix('options') . ' WHERE `ownerid`=' . $id;
+					$sql = 'DELETE FROM ' . prefix('options') . ' WHERE ownerid=' . $id;
 					query($sql, false);
 				}
 			}
@@ -555,7 +555,7 @@ class Gallery {
 				}
 
 				/* refresh 'metadata' albums */
-				$albumids = query("SELECT `id`, `mtime`, `folder`, `dynamic` FROM " . prefix('albums'));
+				$albumids = query("SELECT id, mtime, folder, dynamic FROM " . prefix('albums'));
 				if ($albumids) {
 					while ($analbum = db_fetch_assoc($albumids)) {
 						if (($mtime = filemtime(ALBUM_FOLDER_SERVERPATH . internalToFilesystem($analbum['folder']))) > $analbum['mtime']) {
@@ -604,7 +604,7 @@ class Gallery {
 
 				/* Delete all image entries that don't belong to an album at all. */
 
-				$albumids = query("SELECT `id` FROM " . prefix('albums')); /* all the album IDs */
+				$albumids = query("SELECT id FROM " . prefix('albums')); /* all the album IDs */
 				$idsofalbums = array();
 				if ($albumids) {
 					while ($row = db_fetch_assoc($albumids)) {
@@ -612,7 +612,7 @@ class Gallery {
 					}
 					db_free_result($albumids);
 				}
-				$imageAlbums = query("SELECT DISTINCT `albumid` FROM " . prefix('images')); /* albumids of all the images */
+				$imageAlbums = query("SELECT DISTINCT albumid FROM " . prefix('images')); /* albumids of all the images */
 				$albumidsofimages = array();
 				if ($imageAlbums) {
 					while ($row = db_fetch_assoc($imageAlbums)) {
@@ -625,9 +625,9 @@ class Gallery {
 					$sql = "DELETE FROM " . prefix('images') . " WHERE ";
 					foreach ($orphans as $id) {
 						if (is_null($id)) {
-							$sql .= "`albumid` is NULL OR ";
+							$sql .= "albumid is NULL OR ";
 						} else {
-							$sql .= " `albumid`='" . $id . "' OR ";
+							$sql .= " albumid='" . $id . "' OR ";
 						}
 					}
 					$sql = substr($sql, 0, -4);
@@ -656,12 +656,12 @@ class Gallery {
 
 			$start = array_sum(explode(" ", microtime())); // protect against too much processing.
 			if (!empty($restart)) {
-				$restartwhere = ' WHERE `id`>' . $restart . ' AND `mtime`=0';
+				$restartwhere = ' WHERE id>' . $restart . ' AND mtime=0';
 			} else {
-				$restartwhere = ' WHERE `mtime`=0';
+				$restartwhere = ' WHERE mtime=0';
 			}
 			define('RECORD_LIMIT', 5);
-			$sql = 'SELECT * FROM ' . prefix('images') . $restartwhere . ' ORDER BY `id` LIMIT ' . (RECORD_LIMIT + 2);
+			$sql = 'SELECT * FROM ' . prefix('images') . $restartwhere . ' ORDER BY id LIMIT ' . (RECORD_LIMIT + 2);
 			$images = query($sql);
 			if ($images) {
 				$c = 0;
@@ -677,9 +677,9 @@ class Gallery {
 							zp_apply_filter('image_refresh', $imageobj);
 						}
 					} else {
-						$sql = 'DELETE FROM ' . prefix('images') . ' WHERE `id`="' . $image['id'] . '";';
+						$sql = 'DELETE FROM ' . prefix('images') . ' WHERE id="' . $image['id'] . '";';
 						$result = query($sql);
-						$sql = 'DELETE FROM ' . prefix('comments') . ' WHERE `type` IN (' . zp_image_types('"') . ') AND `ownerid` ="' . $image['id'] . '";';
+						$sql = 'DELETE FROM ' . prefix('comments') . ' WHERE "type" IN (' . zp_image_types('"') . ') AND ownerid ="' . $image['id'] . '";';
 						$result = query($sql);
 					}
 					if (++$c >= RECORD_LIMIT) {
@@ -693,7 +693,7 @@ class Gallery {
 			if ($resource) {
 				while ($row = db_fetch_assoc($resource)) {
 					$tbl = array_shift($row);
-					query('OPTIMIZE TABLE `' . $tbl . '`');
+					query('OPTIMIZE TABLE "' . $tbl . '"');
 				}
 				db_free_result($resource);
 			}
@@ -702,7 +702,7 @@ class Gallery {
 	}
 
 	function commentClean($table) {
-		$ids = query('SELECT `id` FROM ' . prefix($table)); /* all the IDs */
+		$ids = query('SELECT id FROM ' . prefix($table)); /* all the IDs */
 		$idsofitems = array();
 		if ($ids) {
 			while ($row = db_fetch_assoc($ids)) {
@@ -710,7 +710,7 @@ class Gallery {
 			}
 			db_free_result($ids);
 		}
-		$sql = "SELECT DISTINCT `ownerid` FROM " . prefix('comments') . ' WHERE `type` =' . db_quote($table);
+		$sql = "SELECT DISTINCT ownerid FROM " . prefix('comments') . ' WHERE "type" =' . db_quote($table);
 		$commentOwners = query($sql); /* all the comments */
 		$idsofcomments = array();
 		if ($commentOwners) {
@@ -722,7 +722,7 @@ class Gallery {
 		$orphans = array_diff($idsofcomments, $idsofitems); /* owner ids of comments with no owner */
 
 		if (count($orphans) > 0) { /* delete dead comments from the DB */
-			$sql = "DELETE FROM " . prefix('comments') . " WHERE `type`=" . db_quote($table) . " AND (`ownerid`=" . implode(' OR `ownerid`=', $orphans) . ')';
+			$sql = "DELETE FROM " . prefix('comments') . " WHERE \"type\"=" . db_quote($table) . " AND (ownerid=" . implode(' OR ownerid=', $orphans) . ')';
 			query($sql);
 		}
 	}
@@ -738,7 +738,7 @@ class Gallery {
 
 	/**
 	 * Sort the album array based on either according to the sort key.
-	 * Default is to sort on the `sort_order` field.
+	 * Default is to sort on the sort_order field.
 	 *
 	 * Returns an array with the albums in the desired sort order
 	 *
@@ -768,7 +768,7 @@ class Gallery {
 			$viewUnpublished = (zp_loggedin() && $obj->subRights() & (MANAGED_OBJECT_RIGHTS_EDIT | MANAGED_OBJECT_RIGHTS_VIEW));
 		}
 
-		if ((trim($sortkey . '`') != 'sort_order') || ($sortkey == 'RAND()')) { // manual sort is always ascending
+		if ((trim($sortkey . '"') != 'sort_order') || ($sortkey == 'RAND()')) { // manual sort is always ascending
 			$order = false;
 		} else {
 			if (is_null($sortdirection)) {
@@ -776,7 +776,7 @@ class Gallery {
 			}
 			$order = $sortdirection && strtolower($sortdirection) != 'asc';
 		}
-		$sql = 'SELECT * FROM ' . prefix("albums") . ' WHERE `parentid`' . $albumid . ' ORDER BY ' . db_escape($sortkey);
+		$sql = 'SELECT * FROM ' . prefix("albums") . ' WHERE parentid' . $albumid . ' ORDER BY ' . db_escape($sortkey);
 		if ($order)
 			$sql .= ' DESC';
 		$result = query($sql);
@@ -789,10 +789,10 @@ class Gallery {
 				unset($albums[$key]);
 			} else { // album no longer exists
 				$id = $row['id'];
-				query("DELETE FROM " . prefix('albums') . " WHERE `id`=$id"); // delete the record
-				query("DELETE FROM " . prefix('comments') . " WHERE `type` ='images' AND `ownerid`= '$id'"); // remove image comments
-				query("DELETE FROM " . prefix('obj_to_tag') . "WHERE `type`='albums' AND `objectid`=" . $id);
-				query("DELETE FROM " . prefix('albums') . " WHERE `id` = " . $id);
+				query("DELETE FROM " . prefix('albums') . " WHERE id=$id"); // delete the record
+				query("DELETE FROM " . prefix('comments') . " WHERE \"type\" ='images' AND ownerid= '$id'"); // remove image comments
+				query("DELETE FROM " . prefix('obj_to_tag') . "WHERE \"type\"='albums' AND objectid=" . $id);
+				query("DELETE FROM " . prefix('albums') . " WHERE id = " . $id);
 			}
 		}
 		db_free_result($result);

@@ -316,7 +316,7 @@ if (isset($_GET['action'])) {
 						if ($item[4]) {
 							$dis = 0;
 							if ($disableEmpty) {
-								$sql = "SELECT `id`,$key FROM " . prefix('images') . " WHERE $key IS NOT NULL AND TRIM($key) <> '' LIMIT 1";
+								$sql = "SELECT id,$key FROM " . prefix('images') . " WHERE $key IS NOT NULL AND TRIM($key) <> '' LIMIT 1";
 								$rslt = query_single_row($sql, false);
 								if (empty($rslt)) {
 									$dis = 1;
@@ -373,11 +373,11 @@ if (isset($_GET['action'])) {
 				$notify = '?switched';
 			} else {
 				if ($_POST['savethemeoptions'] == 'reset') {
-					$sql = 'DELETE FROM ' . prefix('options') . ' WHERE `theme`=' . db_quote($themename);
+					$sql = 'DELETE FROM ' . prefix('options') . ' WHERE theme=' . db_quote($themename);
 					if ($themealbum) {
-						$sql .= ' AND `ownerid`=' . $themealbum->getID();
+						$sql .= ' AND ownerid=' . $themealbum->getID();
 					} else {
-						$sql .= ' AND `ownerid`=0';
+						$sql .= ' AND ownerid=0';
 					}
 					query($sql);
 					$themeswitch = true;
@@ -435,7 +435,7 @@ if (isset($_GET['action'])) {
 					if ($oig = getThemeOption('image_gray', $table, $themename))
 						$wmo = 99; // force cache clear
 					if ($nch != $ch || $ncw != $cw) { // the crop height/width has been changed
-						$sql = 'UPDATE ' . prefix('images') . ' SET `thumbX`=NULL,`thumbY`=NULL,`thumbW`=NULL,`thumbH`=NULL WHERE `thumbY` IS NOT NULL';
+						$sql = 'UPDATE ' . prefix('images') . ' SET thumbX=NULL,thumbY=NULL,thumbW=NULL,thumbH=NULL WHERE thumbY IS NOT NULL';
 						query($sql);
 						$wmo = 99; // force cache clear as well.
 					}

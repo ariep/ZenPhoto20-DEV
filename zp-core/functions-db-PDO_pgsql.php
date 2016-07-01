@@ -136,13 +136,13 @@ function db_show($what, $aux = '') {
 			$sql = "SELECT * FROM information_schema.tables WHERE table_schema = 'public' AND table_name LIKE '" . db_LIKE_escape($_zp_DB_details['mysql_prefix']) . "%'";
 			return query($sql, false);
 		case 'columns':
-			$sql = 'SHOW FULL COLUMNS FROM `' . $_zp_DB_details['mysql_prefix'] . $aux . '`';
+			$sql = 'SHOW FULL COLUMNS FROM ' . $_zp_DB_details['mysql_prefix'] . $aux;
 			return query($sql, false);
 		case 'variables':
 			$sql = "SHOW VARIABLES LIKE '$aux'";
 			return query_full_array($sql);
 		case 'index':
-			$sql = "SHOW INDEX FROM `" . $_zp_DB_details['mysql_database'] . '`.' . $aux;
+			$sql = "SHOW INDEX FROM " . $_zp_DB_details['mysql_database'] . '.' . $aux;
 			return query_full_array($sql, false);
 	}
 }

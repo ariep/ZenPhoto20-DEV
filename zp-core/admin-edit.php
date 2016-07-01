@@ -187,8 +187,8 @@ if (isset($_GET['action'])) {
 		case "reset_hitcounters":
 			XSRFdefender('hitcounter');
 			$id = sanitize_numeric($_REQUEST['albumid']);
-			$where = ' WHERE `id`=' . $id;
-			$imgwhere = ' WHERE `albumid`=' . $id;
+			$where = ' WHERE id=' . $id;
+			$imgwhere = ' WHERE albumid=' . $id;
 			$return = sanitize_path($r = $_GET['return']);
 			if (!empty($return)) {
 				$return = '&album=' . $return;
@@ -196,8 +196,8 @@ if (isset($_GET['action'])) {
 					$return .= '&tab=subalbuminfo';
 				}
 			}
-			query("UPDATE " . prefix('albums') . " SET `hitcounter`= 0" . $where);
-			query("UPDATE " . prefix('images') . " SET `hitcounter`= 0" . $imgwhere);
+			query("UPDATE " . prefix('albums') . " SET hitcounter= 0" . $where);
+			query("UPDATE " . prefix('images') . " SET hitcounter= 0" . $imgwhere);
 			header('Location: ' . FULLWEBPATH . '/' . ZENFOLDER . '/admin-edit.php?page=edit' . $return . '&counters_reset');
 			exitZP();
 			break;
@@ -739,11 +739,11 @@ echo "\n</head>";
 						$requestor = $_zp_current_admin_obj->getUser();
 						$albumowner = $album->getOwner();
 						if ($albumowner == $requestor) {
-							$retunNull = '`owner` IS NULL OR ';
+							$retunNull = 'owner IS NULL OR ';
 						} else {
 							$retunNull = '';
 						}
-						$sql = 'SELECT * FROM ' . prefix('images') . ' WHERE (`albumid`=' . $album->getID() . ') AND (' . $retunNull . ' `owner`="' . $requestor . '") ORDER BY `' . $oldalbumimagesort . '`';
+						$sql = 'SELECT * FROM ' . prefix('images') . ' WHERE (albumid=' . $album->getID() . ') AND (' . $retunNull . ' owner="' . $requestor . '") ORDER BY ' . $oldalbumimagesort;
 						if ($direction)
 							$sql .= ' DESC';
 
@@ -766,11 +766,11 @@ echo "\n</head>";
 				}
 				switch ($filter) {
 					case'unpublished':
-						$sql = 'SELECT `filename` FROM ' . prefix('images') . ' WHERE (`albumid`=' . $album->getID() . ') AND `show`="0"';
+						$sql = 'SELECT filename FROM ' . prefix('images') . ' WHERE (albumid=' . $album->getID() . ') AND show="0"';
 						$select = query_full_array($sql);
 						break;
 					case'published':
-						$sql = 'SELECT `filename` FROM ' . prefix('images') . ' WHERE (`albumid`=' . $album->getID() . ') AND `show`="1"';
+						$sql = 'SELECT filename FROM ' . prefix('images') . ' WHERE (albumid=' . $album->getID() . ') AND show="1"';
 						$select = query_full_array($sql);
 						break;
 					default:

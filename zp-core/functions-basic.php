@@ -315,7 +315,7 @@ function js_encode($this_string) {
 function primeOptions() {
 	global $_zp_options;
 	if (function_exists('query_full_array')) { //	incase we are in primitive mode
-		$sql = "SELECT LCASE(`name`) as name, `value` FROM " . prefix('options') . ' WHERE (`theme`="" OR `theme` IS NULL) AND `ownerid`=0';
+		$sql = "SELECT LCASE(name) as name, value FROM " . prefix('options') . ' WHERE (theme="" OR theme IS NULL) AND ownerid=0';
 		$optionlist = query_full_array($sql, false);
 		if ($optionlist !== false) {
 			$_zp_options = array();
@@ -369,8 +369,8 @@ function getOptionsLike($pattern) {
 function setOption($key, $value, $persistent = true) {
 	global $_zp_options;
 	if ($persistent) {
-		$sql = 'INSERT INTO ' . prefix('options') . ' (`name`,`ownerid`,`theme`,`value`) VALUES (' . db_quote($key) . ',0,"",';
-		$sqlu = ' ON DUPLICATE KEY UPDATE `value`=';
+		$sql = 'INSERT INTO ' . prefix('options') . ' (name,ownerid,theme,value) VALUES (' . db_quote($key) . ',0,"",';
+		$sqlu = ' ON DUPLICATE KEY UPDATE value=';
 		if (is_null($value)) {
 			$sql .= 'NULL';
 			$sqlu .= 'NULL';
@@ -414,7 +414,7 @@ function setOptionDefault($key, $default) {
 		$creator = NULL;
 	}
 
-	$sql = 'INSERT INTO ' . prefix('options') . ' (`name`, `value`, `ownerid`, `theme`, `creator`) VALUES (' . db_quote($key) . ',';
+	$sql = 'INSERT INTO ' . prefix('options') . ' (name, value, ownerid, theme, creator) VALUES (' . db_quote($key) . ',';
 	if (is_null($default)) {
 		$sql .= 'NULL';
 	} else {
@@ -430,7 +430,7 @@ function setOptionDefault($key, $default) {
 		$_zp_options[strtolower($key)] = $default;
 	} else {
 		if (!is_null($creator)) {
-			$sql = 'UPDATE ' . prefix('options') . 'SET `creator`=' . db_quote($creator) . ' WHERE `name`=' . db_quote($key) . ' AND `ownerid`=0 AND `theme`=""';
+			$sql = 'UPDATE ' . prefix('options') . 'SET creator=' . db_quote($creator) . ' WHERE name=' . db_quote($key) . ' AND ownerid=0 AND theme=""';
 			query($sql, false);
 		}
 	}
@@ -445,7 +445,7 @@ function setOptionDefault($key, $default) {
 function loadLocalOptions($albumid, $theme) {
 	global $_zp_options, $_loaded_local;
 	//raw theme options
-	$sql = "SELECT LCASE(`name`) as name, `value` FROM " . prefix('options') . ' WHERE `theme`=' . db_quote($theme) . ' AND `ownerid`=0';
+	$sql = "SELECT LCASE(name) as name, value FROM " . prefix('options') . ' WHERE theme=' . db_quote($theme) . ' AND ownerid=0';
 	$optionlist = query_full_array($sql, false);
 	if ($optionlist !== false) {
 		foreach ($optionlist as $option) {
@@ -454,7 +454,7 @@ function loadLocalOptions($albumid, $theme) {
 	}
 	if ($albumid) {
 		//album-theme options
-		$sql = "SELECT LCASE(`name`) as name, `value` FROM " . prefix('options') . ' WHERE `theme`=' . db_quote($theme) . ' AND `ownerid`=' . $albumid;
+		$sql = "SELECT LCASE(name) as name, value FROM " . prefix('options') . ' WHERE theme=' . db_quote($theme) . ' AND ownerid=' . $albumid;
 		$optionlist = query_full_array($sql, false);
 		if ($optionlist !== false) {
 			foreach ($optionlist as $option) {
@@ -467,7 +467,7 @@ function loadLocalOptions($albumid, $theme) {
 function purgeOption($key) {
 	global $_zp_options;
 	unset($_zp_options[strtolower($key)]);
-	$sql = 'DELETE FROM ' . prefix('options') . ' WHERE `name`=' . db_quote($key);
+	$sql = 'DELETE FROM ' . prefix('options') . ' WHERE name=' . db_quote($key);
 	query($sql, false);
 }
 
@@ -1272,7 +1272,7 @@ function imgSrcURI($uri) {
  *
  * @param string $folder the album name
  * @param string $field the desired field name
- * @param int $id will be set to the album `id` of the album which has the non-empty field
+ * @param int $id will be set to the album id of the album which has the non-empty field
  * @return string
  */
 function getAlbumInherited($folder, $field, &$id) {
@@ -1281,9 +1281,9 @@ function getAlbumInherited($folder, $field, &$id) {
 	$like = ' LIKE ' . db_quote(db_LIKE_escape($album));
 	while (!empty($folders)) {
 		$album .= '/' . array_shift($folders);
-		$like .= ' OR `folder` LIKE ' . db_quote(db_LIKE_escape($album));
+		$like .= ' OR folder LIKE ' . db_quote(db_LIKE_escape($album));
 	}
-	$sql = 'SELECT `id`, `' . $field . '` FROM ' . prefix('albums') . ' WHERE `folder`' . $like;
+	$sql = 'SELECT id, "' . $field . '" FROM ' . prefix('albums') . ' WHERE folder' . $like;
 	$result = query_full_array($sql);
 	if (!is_array($result))
 		return '';

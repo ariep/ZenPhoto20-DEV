@@ -238,7 +238,7 @@ class PersistentObject {
 		} else {
 			$id = '=' . $id;
 		}
-		$sql = 'DELETE FROM ' . prefix($this->table) . ' WHERE `id`' . $id;
+		$sql = 'DELETE FROM ' . prefix($this->table) . ' WHERE id' . $id;
 		$this->loaded = false;
 		$this->transient = true;
 		return query($sql);
@@ -396,9 +396,9 @@ class PersistentObject {
 						$sql .= ",";
 					}
 					if (is_null($value)) {
-						$sql .= " `$col` = NULL";
+						$sql .= " \"$col\" = NULL";
 					} else {
-						$sql .= " `$col` = " . db_quote($value);
+						$sql .= " \"$col\" = " . db_quote($value);
 					}
 					$this->data[$col] = $value;
 				}
@@ -713,12 +713,12 @@ class ThemeObject extends PersistentObject {
 	 */
 	function getComments($moderated = false, $private = false, $desc = false) {
 		$sql = "SELECT *, (date + 0) AS date FROM " . prefix("comments") .
-						" WHERE `type`='" . $this->table . "' AND `ownerid`='" . $this->getID() . "'";
+						" WHERE \"type\" ='" . $this->table . "' AND ownerid='" . $this->getID() . "'";
 		if (!$moderated) {
-			$sql .= " AND `inmoderation`=0";
+			$sql .= " AND inmoderation=0";
 		}
 		if (!$private) {
-			$sql .= " AND `private`=0";
+			$sql .= " AND private=0";
 		}
 		$sql .= " ORDER BY id";
 		if ($desc) {
@@ -760,7 +760,7 @@ class ThemeObject extends PersistentObject {
 	function getCommentCount() {
 		if (is_null($this->commentcount)) {
 			if ($this->comments == null) {
-				$count = db_count("comments", "WHERE `type`='" . $this->table . "' AND `inmoderation`=0 AND `private`=0 AND `ownerid`=" . $this->getID());
+				$count = db_count("comments", "WHERE \"type\" ='" . $this->table . "' AND inmoderation=0 AND private=0 AND ownerid=" . $this->getID());
 				$this->commentcount = $count;
 			} else {
 				$this->commentcount = count($this->comments);

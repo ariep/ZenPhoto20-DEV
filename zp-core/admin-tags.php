@@ -25,9 +25,9 @@ if (count($_POST) > 0) {
 		foreach ($_POST as $value) {
 			if (!empty($value)) {
 				$value = html_decode(sanitize($value, 3));
-				$result = query_single_row('SELECT `id` FROM ' . prefix('tags') . ' WHERE `name`=' . db_quote($value));
+				$result = query_single_row('SELECT id FROM ' . prefix('tags') . ' WHERE name=' . db_quote($value));
 				if (!is_array($result)) { // it really is a new tag
-					query('INSERT INTO ' . prefix('tags') . ' (`name`,`language`) VALUES (' . db_quote($value) . ',' . db_quote($language) . ')');
+					query('INSERT INTO ' . prefix('tags') . ' (name,language) VALUES (' . db_quote($value) . ',' . db_quote($language) . ')');
 				}
 			}
 		}
@@ -48,9 +48,9 @@ if (count($_POST) > 0) {
 		switch ($action) {
 			case'delete':
 				if (count($tags) > 0) {
-					$sql = "SELECT `id` FROM " . prefix('tags') . " WHERE ";
+					$sql = "SELECT id FROM " . prefix('tags') . " WHERE ";
 					foreach ($tags as $tag) {
-						$sql .= "`name`=" . (db_quote($tag)) . " OR ";
+						$sql .= "name=" . (db_quote($tag)) . " OR ";
 					}
 					$sql = substr($sql, 0, strlen($sql) - 4);
 					$dbtags = query_full_array($sql);
@@ -58,8 +58,8 @@ if (count($_POST) > 0) {
 						$sqltags = "DELETE FROM " . prefix('tags') . " WHERE ";
 						$sqlobjects = "DELETE FROM " . prefix('obj_to_tag') . " WHERE ";
 						foreach ($dbtags as $tag) {
-							$sqltags .= "`id`='" . $tag['id'] . "' OR ";
-							$sqlobjects .= "`tagid`='" . $tag['id'] . "' OR ";
+							$sqltags .= "id='" . $tag['id'] . "' OR ";
+							$sqlobjects .= "tagid='" . $tag['id'] . "' OR ";
 						}
 						$sqltags = substr($sqltags, 0, strlen($sqltags) - 4);
 						query($sqltags);
@@ -72,7 +72,7 @@ if (count($_POST) > 0) {
 			case'assign':
 				if (count($tags) > 0) {
 					foreach ($tags as $tag) {
-						$sql = 'UPDATE ' . prefix('tags') . ' SET `language`=' . db_quote($language) . ' WHERE `name`=' . db_quote($tag);
+						$sql = 'UPDATE ' . prefix('tags') . ' SET language=' . db_quote($language) . ' WHERE name=' . db_quote($tag);
 						query($sql);
 					}
 				}
@@ -87,18 +87,18 @@ if (count($_POST) > 0) {
 				$newName = sanitize($newName, 3);
 				$key = substr($key, 2); // strip off the 'R_'
 				$key = postIndexDecode(sanitize($key));
-				$newtag = query_single_row('SELECT `id` FROM ' . prefix('tags') . ' WHERE `name`=' . db_quote($newName));
-				$oldtag = query_single_row('SELECT `id` FROM ' . prefix('tags') . ' WHERE `name`=' . db_quote($key));
+				$newtag = query_single_row('SELECT id FROM ' . prefix('tags') . ' WHERE name=' . db_quote($newName));
+				$oldtag = query_single_row('SELECT id FROM ' . prefix('tags') . ' WHERE name=' . db_quote($key));
 				if (is_array($newtag)) { // there is an existing tag of the same name
 					$existing = $newtag['id'] != $oldtag['id']; // but maybe it is actually the original in a different case.
 				} else {
 					$existing = false;
 				}
 				if ($existing) {
-					query('DELETE FROM ' . prefix('tags') . ' WHERE `id`=' . $oldtag['id']);
-					query('UPDATE ' . prefix('obj_to_tag') . ' SET `tagid`=' . $newtag['id'] . ' WHERE `tagid`=' . $oldtag['id']);
+					query('DELETE FROM ' . prefix('tags') . ' WHERE id=' . $oldtag['id']);
+					query('UPDATE ' . prefix('obj_to_tag') . ' SET tagid=' . $newtag['id'] . ' WHERE tagid=' . $oldtag['id']);
 				} else {
-					query('UPDATE ' . prefix('tags') . ' SET `name`=' . db_quote($newName) . ' WHERE `id`=' . $oldtag['id']);
+					query('UPDATE ' . prefix('tags') . ' SET name=' . db_quote($newName) . ' WHERE id=' . $oldtag['id']);
 				}
 			}
 		}

@@ -686,7 +686,7 @@ function printAdminHeader($tab, $subtab = NULL) {
 				if ($theme) {
 					$v = getThemeOption($key, $album, $theme);
 				} else {
-					$sql = "SELECT `value` FROM " . prefix('options') . " WHERE `name`=" . db_quote($key);
+					$sql = "SELECT value FROM " . prefix('options') . " WHERE name=" . db_quote($key);
 					$db = query_single_row($sql);
 					if ($db) {
 						$v = $db['value'];
@@ -835,7 +835,7 @@ function printAdminHeader($tab, $subtab = NULL) {
 									if ($theme) {
 										$v = getThemeOption($checkbox, $album, $theme);
 									} else {
-										$sql = "SELECT `value` FROM " . prefix('options') . " WHERE `name`=" . db_quote($checkbox);
+										$sql = "SELECT value FROM " . prefix('options') . " WHERE name=" . db_quote($checkbox);
 										$db = query_single_row($sql);
 										if ($db) {
 											$v = $db['value'];
@@ -870,7 +870,7 @@ function printAdminHeader($tab, $subtab = NULL) {
 									if ($theme) {
 										$v = getThemeOption($checkbox, $album, $theme);
 									} else {
-										$sql = "SELECT `value` FROM " . prefix('options') . " WHERE `name`=" . db_quote($checkbox);
+										$sql = "SELECT value FROM " . prefix('options') . " WHERE name=" . db_quote($checkbox);
 										$db = query_single_row($sql);
 										if ($db) {
 											$v = $db['value'];
@@ -1196,13 +1196,13 @@ function printAdminHeader($tab, $subtab = NULL) {
 		if ((int) $addnew <= 1 && is_null($_zp_admin_ordered_taglist)) {
 			switch ($tagsort) {
 				case 'language':
-					$order = '`language` DESC,`name`';
+					$order = 'language DESC,name';
 					break;
 				case 'recent':
-					$order = '`id` DESC';
+					$order = 'id DESC';
 					break;
 				default:
-					$order = '`name`';
+					$order = 'name';
 					break;
 			}
 			$languages = $counts = array();
@@ -3730,7 +3730,7 @@ function postAlbumSort($parentid) {
 		}
 		foreach ($order as $item => $orderlist) {
 			$item = str_replace('id_', '', $item);
-			$currentalbum = query_single_row('SELECT * FROM ' . prefix('albums') . ' WHERE `id`=' . $item);
+			$currentalbum = query_single_row('SELECT * FROM ' . prefix('albums') . ' WHERE id=' . $item);
 			$sortorder = array_pop($orderlist);
 			if (count($orderlist) > 0) {
 				$newparent = $sortToID[implode('-', $orderlist)];
@@ -3738,7 +3738,7 @@ function postAlbumSort($parentid) {
 				$newparent = $parentid;
 			}
 			if ($newparent == $currentalbum['parentid']) {
-				$sql = 'UPDATE ' . prefix('albums') . ' SET `sort_order`=' . db_quote(sprintf('%03u', $sortorder)) . ' WHERE `id`=' . $item;
+				$sql = 'UPDATE ' . prefix('albums') . ' SET sort_order=' . db_quote(sprintf('%03u', $sortorder)) . ' WHERE id=' . $item;
 				query($sql);
 			} else { // have to do a move
 				$albumname = $currentalbum['folder'];
@@ -3749,7 +3749,7 @@ function postAlbumSort($parentid) {
 				if (is_null($newparent)) {
 					$dest = $albumname;
 				} else {
-					$parent = query_single_row('SELECT * FROM ' . prefix('albums') . ' WHERE `id`=' . $newparent);
+					$parent = query_single_row('SELECT * FROM ' . prefix('albums') . ' WHERE id=' . $newparent);
 					if ($parent['dynamic']) {
 						return "&mcrerr=5";
 					} else {

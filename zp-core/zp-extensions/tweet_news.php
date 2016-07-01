@@ -175,7 +175,7 @@ class tweet {
 	static function published($obj) {
 		$error = self::tweetObjectWithCheck($obj);
 		if ($error) {
-			query('INSERT INTO ' . prefix('plugin_storage') . ' (`type`,`aux`,`data`) VALUES ("tweet_news","error",' . db_quote($error) . ')');
+			query('INSERT INTO ' . prefix('plugin_storage') . ' ("type","aux","data") VALUES ("tweet_news","error",' . db_quote($error) . ')');
 		}
 		return $obj;
 	}
@@ -195,9 +195,9 @@ class tweet {
 						case 'pages':
 							$dt = $obj->getPublishDate();
 							if ($dt > date('Y-m-d H:i:s')) {
-								$result = query_single_row('SELECT * FROM ' . prefix('plugin_storage') . ' WHERE `type`="tweet_news" AND `aux`="pending_pages" AND `data`=' . db_quote($obj->getTitlelink()));
+								$result = query_single_row('SELECT * FROM ' . prefix('plugin_storage') . ' WHERE "type"=\'tweet_news\' AND "aux"=\'pending_pages\' AND "data"=' . db_quote($obj->getTitlelink()));
 								if (!$result) {
-									query('INSERT INTO ' . prefix('plugin_storage') . ' (`type`,`aux`,`data`) VALUES ("tweet_news","pending_pages",' . db_quote($obj->getTitlelink()) . ')');
+									query('INSERT INTO ' . prefix('plugin_storage') . ' ("type","aux","data") VALUES (\'tweet_news\',\'pending_pages\',' . db_quote($obj->getTitlelink()) . ')');
 								}
 							} else {
 								$error = self::tweetObject($obj);
@@ -220,9 +220,9 @@ class tweet {
 							}
 							$dt = $obj->getPublishDate();
 							if ($dt > date('Y-m-d H:i:s')) {
-								$result = query_single_row('SELECT * FROM ' . prefix('plugin_storage') . ' WHERE `type`="tweet_news" AND `aux`="pending" AND `data`=' . db_quote($obj->getTitlelink()));
+								$result = query_single_row('SELECT * FROM ' . prefix('plugin_storage') . ' WHERE "type"=\'tweet_news\' AND "aux"=\'pending\' AND "data"=' . db_quote($obj->getTitlelink()));
 								if (!$result) {
-									query('INSERT INTO ' . prefix('plugin_storage') . ' (`type`,`aux`,`data`) VALUES ("tweet_news","pending",' . db_quote($obj->getTitlelink()) . ')');
+									query('INSERT INTO ' . prefix('plugin_storage') . ' ("type","aux","data") VALUES (\'tweet_news\',\'pending\',' . db_quote($obj->getTitlelink()) . ')');
 								}
 							} else {
 								$error = self::tweetObject($obj);
@@ -231,9 +231,9 @@ class tweet {
 						case 'albums':
 							$dt = $obj->getPublishDate();
 							if ($dt > date('Y-m-d H:i:s')) {
-								$result = query_single_row('SELECT * FROM ' . prefix('plugin_storage') . ' WHERE `type`="tweet_news" AND `aux`="pending_albums" AND `data`=' . db_quote($obj->name));
+								$result = query_single_row('SELECT * FROM ' . prefix('plugin_storage') . ' WHERE "type"=\'tweet_news\' AND "aux"=\'pending_albums\' AND "data"=' . db_quote($obj->name));
 								if (!$result) {
-									query('INSERT INTO ' . prefix('plugin_storage') . ' (`type`,`aux`,`data`) VALUES ("tweet_news","pending_albums",' . db_quote($obj->name) . ')');
+									query('INSERT INTO ' . prefix('plugin_storage') . ' ("type","aux","data") VALUES (\'tweet_news\',\'pending_albums\',' . db_quote($obj->name) . ')');
 								}
 							} else {
 								$error = self::tweetObject($obj);
@@ -242,9 +242,9 @@ class tweet {
 						case 'images':
 							$dt = $obj->getPublishDate();
 							if ($dt > date('Y-m-d H:i:s')) {
-								$result = query_single_row('SELECT * FROM ' . prefix('plugin_storage') . ' WHERE `type`="tweet_news" AND `aux`="pending_images" AND `data`=' . db_quote($obj->imagefolder . '/' . $obj->filename));
+								$result = query_single_row('SELECT * FROM ' . prefix('plugin_storage') . ' WHERE "type"=\'tweet_news\' AND "aux"=\'pending_images\' AND "data"=' . db_quote($obj->imagefolder . '/' . $obj->filename));
 								if (!$result) {
-									query('INSERT INTO ' . prefix('plugin_storage') . ' (`type`,`aux`,`data`) VALUES ("tweet_news","pending_images",' . db_quote($obj->imagefolder . '/' . $obj->filename) . ')');
+									query('INSERT INTO ' . prefix('plugin_storage') . ' ("type","aux","data") VALUES (\'tweet_news\',\'pending_images\',' . db_quote($obj->imagefolder . '/' . $obj->filename) . ')');
 								}
 							} else {
 								$error = self::tweetObject($obj);
@@ -333,11 +333,11 @@ class tweet {
 	 * returns any tweet errors accumulated but not displayed. Clears the list
 	 */
 	private static function tweetFetchErrors() {
-		$result = query_full_array('SELECT * FROM ' . prefix('plugin_storage') . ' WHERE `type`="tweet_news" AND `aux`="error"');
+		$result = query_full_array('SELECT * FROM ' . prefix('plugin_storage') . ' WHERE "type"=\'tweet_news\' AND "aux"=\'error\'');
 		$errors = '';
 		foreach ($result as $error) {
 			$errors .= $error['data'] . '<br />';
-			query('DELETE FROM' . prefix('plugin_storage') . ' WHERE `id`=' . $error['id']);
+			query('DELETE FROM' . prefix('plugin_storage') . ' WHERE id=' . $error['id']);
 		}
 		return $errors;
 	}
@@ -398,7 +398,7 @@ class tweet {
 		if (isset($_POST['tweet_me' . $prefix])) {
 			$error = self::tweetObject($object);
 			if ($error) {
-				query('INSERT INTO ' . prefix('plugin_storage') . ' (`type`,`aux`,`data`) VALUES ("tweet_news","error",' . db_quote($error) . ')');
+				query('INSERT INTO ' . prefix('plugin_storage') . ' ("type","aux","data") VALUES (\'tweet_news\',\'error\',' . db_quote($error) . ')');
 			}
 		}
 		return $object;

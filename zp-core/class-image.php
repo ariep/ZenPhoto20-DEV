@@ -881,8 +881,8 @@ class Image extends MediaObject {
 				$result = $result && @unlink($file);
 			}
 			if ($result) {
-				query("DELETE FROM " . prefix('obj_to_tag') . "WHERE `type`='images' AND `objectid`=" . $this->id);
-				query("DELETE FROM " . prefix('comments') . "WHERE `type` ='images' AND `ownerid`=" . $this->id);
+				query("DELETE FROM " . prefix('obj_to_tag') . "WHERE \"type\"='images' AND objectid=" . $this->id);
+				query("DELETE FROM " . prefix('comments') . "WHERE \"type\" ='images' AND ownerid=" . $this->id);
 				$filestodelete = safe_glob(SERVERCACHE . '/' . substr(dirname($this->localpath), strlen(ALBUM_FOLDER_SERVERPATH)) . '/*' . stripSuffix(basename($this->localpath)) . '*');
 				foreach ($filestodelete as $file) {
 					@chmod($file, 0777);
@@ -993,7 +993,7 @@ class Image extends MediaObject {
 		if ($result) {
 			if ($newID = parent::copy(array('filename' => $filename, 'albumid' => $newalbum->getID()))) {
 				storeTags(readTags($this->getID(), 'images', ''), $newID, 'images');
-				query('UPDATE ' . prefix('images') . ' SET `mtime`=' . filemtime($newpath) . ' WHERE `filename`="' . $filename . '" AND `albumid`=' . $newalbum->getID());
+				query('UPDATE ' . prefix('images') . ' SET mtime=' . filemtime($newpath) . ' WHERE filename="' . $filename . '" AND albumid=' . $newalbum->getID());
 				return 0;
 			}
 		}

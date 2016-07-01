@@ -854,12 +854,12 @@ class SearchEngine {
 			foreach ($list as $category) {
 				if (in_array($category['title'], $this->category_list)) {
 					$catobj = new Category($category['titlelink']);
-					$cat .= ' `cat_id`=' . $catobj->getID() . ' OR';
+					$cat .= ' cat_id=' . $catobj->getID() . ' OR';
 					$subcats = $catobj->getSubCategories();
 					if ($subcats) {
 						foreach ($subcats as $subcat) {
 							$catobj = new Category($subcat);
-							$cat .= ' `cat_id`=' . $catobj->getID() . ' OR';
+							$cat .= ' cat_id=' . $catobj->getID() . ' OR';
 						}
 					}
 				}
@@ -868,7 +868,7 @@ class SearchEngine {
 				$cat = ' WHERE ' . substr($cat, 0, -3);
 			}
 		}
-		$sql = 'SELECT DISTINCT `news_id` FROM ' . prefix('news2cat') . $cat;
+		$sql = 'SELECT DISTINCT news_id FROM ' . prefix('news2cat') . $cat;
 		$result = query($sql);
 		$list = array();
 		if ($result) {
@@ -897,7 +897,7 @@ class SearchEngine {
 				$build[] = $cur;
 			} else {
 				if (count($build) > 2) {
-					$clause .= '(`id`>=' . array_shift($build) . ' AND `id`<=' . array_pop($build) . ') OR ';
+					$clause .= '(id>=' . array_shift($build) . ' AND id<=' . array_pop($build) . ') OR ';
 				} else {
 					$orphans = array_merge($build, $orphans);
 				}
@@ -906,7 +906,7 @@ class SearchEngine {
 			$last = $cur;
 		}
 		if (count($build) > 2) {
-			$clause .= '(`id`>=' . array_shift($build) . ' AND `id`<=' . array_pop($build) . ') OR ';
+			$clause .= '(id>=' . array_shift($build) . ' AND id<=' . array_pop($build) . ') OR ';
 		} else {
 			$orphans = array_merge($build, $orphans);
 		}
@@ -914,7 +914,7 @@ class SearchEngine {
 			$clause = substr($clause, 0, -4);
 		} else {
 			$orpahns = asort($orphans);
-			$clause .= '`id` IN (' . implode(',', $orphans) . ')';
+			$clause .= 'id IN (' . implode(',', $orphans) . ')';
 		}
 		return $clause;
 	}
@@ -929,7 +929,7 @@ class SearchEngine {
 	 * @return array
 	 */
 	protected static function sortResults($sorttype, $sortdirection, $result, $weights) {
-		$sorttype = trim($sorttype, '`');
+		$sorttype = trim($sorttype, '"');
 		if ($weights) {
 			$result = sortMultiArray($result, 'weight', true, true, false, false, array('weight'));
 		}
@@ -983,34 +983,34 @@ class SearchEngine {
 	 */
 	function searchDate($searchstring, $searchdate, $tbl, $sorttype, $sortdirection, $whichdate = 'date') {
 		global $_zp_current_album, $_zp_gallery;
-		$sql = 'SELECT DISTINCT `id`, `show`,`title`';
+		$sql = 'SELECT DISTINCT id, show,title';
 		switch ($tbl) {
 			case 'pages':
 			case 'news':
-				$sql .= ',`titlelink` ';
+				$sql .= ',titlelink ';
 				break;
 			case 'albums':
-				$sql .= ",`desc`,`folder` ";
+				$sql .= ",\"desc\",folder ";
 				break;
 			default:
-				$sql .= ",`desc`,`albumid`,`filename` ";
+				$sql .= ",\"desc\",albumid,filename ";
 				break;
 		}
 		$sql .= "FROM " . prefix($tbl) . " WHERE ";
 		if (!zp_loggedin()) {
-			$sql .= "`show` = 1 AND (";
+			$sql .= "show = 1 AND (";
 		}
 
 		if (!empty($searchdate)) {
 			if ($searchdate == "0000-00") {
-				$sql .= "`$whichdate`=\"0000-00-00 00:00:00\"";
+				$sql .= "\"$whichdate\"=\"0000-00-00 00:00:00\"";
 			} else {
 				$datesize = sizeof(explode('-', $searchdate));
 				// search by day
 				if ($datesize == 3) {
 					$d1 = $searchdate . " 00:00:00";
 					$d2 = $searchdate . " 23:59:59";
-					$sql .= "`$whichdate` >= \"$d1\" AND `$whichdate` < \"$d2\"";
+					$sql .= "\"$whichdate\" >= \"$d1\" AND \"$whichdate\" < \"$d2\"";
 				}
 				// search by month
 				else if ($datesize == 2) {
@@ -1018,9 +1018,9 @@ class SearchEngine {
 					$d = strtotime($d1);
 					$d = strtotime('+ 1 month', $d);
 					$d2 = substr(date('Y-m-d H:m:s', $d), 0, 7) . "-01 00:00:00";
-					$sql .= "`$whichdate` >= \"$d1\" AND `$whichdate` < \"$d2\"";
+					$sql .= "\"$whichdate\" >= \"$d1\" AND \"$whichdate\" < \"$d2\"";
 				} else {
-					$sql .= "`$whichdate`<\"0000-00-00 00:00:00\"";
+					$sql .= "\"$whichdate\"<\"0000-00-00 00:00:00\"";
 				}
 			}
 		}
@@ -1031,7 +1031,7 @@ class SearchEngine {
 		switch ($tbl) {
 			case 'news':
 				if (empty($sorttype)) {
-					$key = '`date` DESC';
+					$key = '"date" DESC';
 				} else {
 					$key = trim($sorttype . ' ' . $sortdirection);
 				}
@@ -1043,14 +1043,14 @@ class SearchEngine {
 				if (is_null($sorttype)) {
 					if (empty($this->album)) {
 						list($key, $sortdirection) = $this->sortKey($_zp_gallery->getSortType(), $sortdirection, 'title', 'albums');
-						if (trim($key . '`') != 'sort_order') {
+						if (trim($key . '"') != 'sort_order') {
 							if ($_zp_gallery->getSortDirection()) {
 								$key .= " DESC";
 							}
 						}
 					} else {
 						$key = $this->album->getAlbumSortKey();
-						if (trim($key . '`') != 'sort_order' && $key != 'RAND()') {
+						if (trim($key . '"') != 'sort_order' && $key != 'RAND()') {
 							if ($this->album->getSortDirection('album')) {
 								$key .= " DESC";
 							}
@@ -1064,19 +1064,19 @@ class SearchEngine {
 			default:
 				$hidealbums = getNotViewableAlbums();
 				if (!empty($hidealbums)) {
-					$sql .= ' AND `albumid` NOT IN (' . implode(',', $hidealbums) . ')';
+					$sql .= ' AND albumid NOT IN (' . implode(',', $hidealbums) . ')';
 				}
 				if (is_null($sorttype)) {
 					if (empty($this->album)) {
 						list($key, $sortdirection) = $this->sortKey(IMAGE_SORT_TYPE, $sortdirection, 'title', 'images');
-						if (trim($key . '`') != 'sort_order') {
+						if (trim($key . '"') != 'sort_order') {
 							if (IMAGE_SORT_DIRECTION) {
 								$key .= " DESC";
 							}
 						}
 					} else {
 						$key = $thie->album->getImageSortKey();
-						if (trim($key . '`') != 'sort_order' && $key != 'RAND()') {
+						if (trim($key . '"') != 'sort_order' && $key != 'RAND()') {
 							if ($this->album->getSortDirection('image')) {
 								$key .= " DESC";
 							}
@@ -1121,7 +1121,7 @@ class SearchEngine {
 					}
 					unset($fields[$key]);
 					query('SET @serachfield="news_categories"');
-					$tagsql = 'SELECT @serachfield AS field, t.`title` AS name, o.`news_id` AS `objectid` FROM ' . prefix('news_categories') . ' AS t, ' . prefix('news2cat') . ' AS o WHERE t.`id`=o.`cat_id` AND (';
+					$tagsql = 'SELECT @serachfield AS field, t.title AS name, o.news_id AS objectid FROM ' . prefix('news_categories') . ' AS t, ' . prefix('news2cat') . ' AS o WHERE t.id=o.cat_id AND (';
 					foreach ($searchstring as $singlesearchstring) {
 						switch ($singlesearchstring) {
 							case '&':
@@ -1136,10 +1136,10 @@ class SearchEngine {
 								break;
 							default:
 								$targetfound = true;
-								$tagsql .= '`title` = ' . db_quote($singlesearchstring) . ' OR ';
+								$tagsql .= 'title = ' . db_quote($singlesearchstring) . ' OR ';
 						}
 					}
-					$tagsql = substr($tagsql, 0, strlen($tagsql) - 4) . ') ORDER BY t.`id`';
+					$tagsql = substr($tagsql, 0, strlen($tagsql) - 4) . ') ORDER BY t.id';
 					$objects = query_full_array($tagsql, false);
 					if (is_array($objects)) {
 						$tag_objects = $objects;
@@ -1150,11 +1150,11 @@ class SearchEngine {
 				case 'tags':
 					unset($fields[$key]);
 					query('SET @serachfield="tags"');
-					$tagsql = 'SELECT @serachfield AS field, t.`name`,t.language, o.`objectid` FROM ' . prefix('tags') . ' AS t, ' . prefix('obj_to_tag') . ' AS o WHERE t.`id`=o.`tagid` ';
+					$tagsql = 'SELECT @serachfield AS field, t.name,t.language, o.objectid FROM ' . prefix('tags') . ' AS t, ' . prefix('obj_to_tag') . ' AS o WHERE t.id=o.tagid ';
 					if (getOption('languageTagSearch')) {
 						$tagsql .= 'AND (t.language LIKE ' . db_quote(db_LIKE_escape($this->language) . '%') . ' OR t.language="") ';
 					}
-					$tagsql .= 'AND o.`type`="' . $tbl . '" AND (';
+					$tagsql .= 'AND o.type="' . $tbl . '" AND (';
 					foreach ($searchstring as $singlesearchstring) {
 						switch ($singlesearchstring) {
 							case '&':
@@ -1165,8 +1165,8 @@ class SearchEngine {
 								break;
 							case '*':
 								query('SET @emptyfield="*"');
-								$tagsql = str_replace('t.`name`', '@emptyfield as name', $tagsql);
-								$tagsql .= "t.`name` IS NOT NULL OR ";
+								$tagsql = str_replace('t.name', '@emptyfield as name', $tagsql);
+								$tagsql .= "t.name IS NOT NULL OR ";
 								break;
 							default:
 								$targetfound = true;
@@ -1175,10 +1175,10 @@ class SearchEngine {
 								} else {
 									$target = $singlesearchstring;
 								}
-								$tagsql .= 't.`name` ' . strtoupper($tagPattern['type']) . ' ' . db_quote($tagPattern['open'] . $target . $tagPattern['close']) . ' OR ';
+								$tagsql .= 't.name ' . strtoupper($tagPattern['type']) . ' ' . db_quote($tagPattern['open'] . $target . $tagPattern['close']) . ' OR ';
 						}
 					}
-					$tagsql = substr($tagsql, 0, strlen($tagsql) - 4) . ') ORDER BY t.`id`';
+					$tagsql = substr($tagsql, 0, strlen($tagsql) - 4) . ') ORDER BY t.id';
 					$objects = query_full_array($tagsql, false);
 					if (is_array($objects)) {
 						$tag_objects = array_merge($tag_objects, $objects);
@@ -1221,7 +1221,7 @@ class SearchEngine {
 								query('SET @serachfield=' . db_quote($fieldname));
 								switch ($singlesearchstring) {
 									case '*':
-										$sql = 'SELECT @serachtarget AS name, @serachfield AS field, `id` AS `objectid` FROM ' . prefix($tbl) . ' WHERE (' . "COALESCE(`$fieldname`, '') != ''" . ') ORDER BY `id`';
+										$sql = 'SELECT @serachtarget AS name, @serachfield AS field, id AS objectid FROM ' . prefix($tbl) . ' WHERE (' . "COALESCE(\"$fieldname\", '') != ''" . ') ORDER BY id';
 										break;
 									default:
 										if ($this->pattern['type'] == 'like') {
@@ -1229,8 +1229,8 @@ class SearchEngine {
 										} else {
 											$target = $singlesearchstring;
 										}
-										$fieldsql = ' `' . $fieldname . '` ' . strtoupper($this->pattern['type']) . ' ' . db_quote($this->pattern['open'] . $target . $this->pattern['close']);
-										$sql = 'SELECT @serachtarget AS name, @serachfield AS field, `id` AS `objectid` FROM ' . prefix($tbl) . ' WHERE (' . $fieldsql . ') ORDER BY `id`';
+										$fieldsql = ' "' . $fieldname . '" ' . strtoupper($this->pattern['type']) . ' ' . db_quote($this->pattern['open'] . $target . $this->pattern['close']);
+										$sql = 'SELECT @serachtarget AS name, @serachfield AS field, id AS objectid FROM ' . prefix($tbl) . ' WHERE (' . $fieldsql . ') ORDER BY id';
 								}
 								$objects = query_full_array($sql, false);
 								if (is_array($objects)) {
@@ -1326,7 +1326,7 @@ class SearchEngine {
 							case '!':
 								if (is_null($allIDs)) {
 									$allIDs = array();
-									$result = query("SELECT `id` FROM " . prefix($tbl));
+									$result = query("SELECT id FROM " . prefix($tbl));
 									if ($result) {
 										while ($row = db_fetch_assoc($result)) {
 											$allIDs[] = $row['id'];
@@ -1360,16 +1360,16 @@ class SearchEngine {
 		if (count($idlist) > 0) {
 			$weights = array_count_values($idlist);
 			arsort($weights, SORT_NUMERIC);
-			$sql = 'SELECT DISTINCT `id`,`show`,`title`,';
+			$sql = 'SELECT DISTINCT id,show,title,';
 
 			switch ($tbl) {
 				case 'news':
 					if ($this->search_unpublished || zp_loggedin(MANAGE_ALL_NEWS_RIGHTS)) {
 						$show = '';
 					} else {
-						$show = "`show` = 1 AND ";
+						$show = "show = 1 AND ";
 					}
-					$sql .= '`titlelink` ';
+					$sql .= 'titlelink ';
 					if (is_array($this->category_list)) {
 						$news_list = $this->subsetNewsCategories();
 						$idlist = array_intersect($news_list, $idlist);
@@ -1378,7 +1378,7 @@ class SearchEngine {
 						}
 					}
 					if (empty($sorttype)) {
-						$key = '`date` DESC';
+						$key = '"date" DESC';
 					} else {
 						if ($sortdirection && strtoupper($sortdirection) != 'ASC') {
 							$sortdirection = 'DESC';
@@ -1386,18 +1386,18 @@ class SearchEngine {
 						$key = trim($sorttype . ' ' . $sortdirection);
 					}
 					if ($show) {
-						$show .= '`date`<=' . db_quote(date('Y-m-d H:i:s')) . ' AND ';
+						$show .= '"date"<=' . db_quote(date('Y-m-d H:i:s')) . ' AND ';
 					}
 					break;
 				case 'pages':
 					if (zp_loggedin(MANAGE_ALL_PAGES_RIGHTS)) {
 						$show = '';
 					} else {
-						$show = "`show` = 1 AND ";
+						$show = "show = 1 AND ";
 					}
-					$sql .= '`titlelink` ';
+					$sql .= 'titlelink ';
 					if ($show) {
-						$show .= '`date`<=' . db_quote(date('Y-m-d H:i:s')) . ' AND ';
+						$show .= '"date"<=' . db_quote(date('Y-m-d H:i:s')) . ' AND ';
 					}
 					$key = 'sort_order';
 					break;
@@ -1405,9 +1405,9 @@ class SearchEngine {
 					if ($this->search_unpublished || zp_loggedin()) {
 						$show = '';
 					} else {
-						$show = "`show` = 1 AND ";
+						$show = "show = 1 AND ";
 					}
-					$sql .= "`folder` ";
+					$sql .= "folder ";
 					if (is_null($sorttype)) {
 						if (empty($this->album)) {
 							list($key, $sortdirection) = $this->sortKey($_zp_gallery->getSortType(), $sortdirection, 'title', 'albums');
@@ -1416,7 +1416,7 @@ class SearchEngine {
 							}
 						} else {
 							$key = $this->album->getAlbumSortKey();
-							if (trim($key . '`') != 'sort_order' && $key != 'RAND()') {
+							if (trim($key . '"') != 'sort_order' && $key != 'RAND()') {
 								if ($this->album->getSortDirection('album')) {
 									$key .= " DESC";
 								}
@@ -1431,9 +1431,9 @@ class SearchEngine {
 					if ($this->search_unpublished || zp_loggedin()) {
 						$show = '';
 					} else {
-						$show = "`show` = 1 AND ";
+						$show = "show = 1 AND ";
 					}
-					$sql .= "`albumid`, `filename` ";
+					$sql .= "albumid, filename ";
 					if (is_null($sorttype)) {
 						if (empty($this->album)) {
 							list($key, $sortdirection) = $this->sortKey($sorttype, $sortdirection, 'title', 'images');
@@ -1442,7 +1442,7 @@ class SearchEngine {
 							}
 						} else {
 							$key = $this->album->getImageSortKey();
-							if (trim($key . '`') != 'sort_order') {
+							if (trim($key . '"') != 'sort_order') {
 								if ($this->album->getSortDirection('image')) {
 									$key .= " DESC";
 								}
@@ -1646,7 +1646,7 @@ class SearchEngine {
 					if (array_key_exists($albumid, $albums_seen)) {
 						$albumrow = $albums_seen[$albumid];
 					} else {
-						$query = "SELECT folder, `show` FROM " . prefix('albums') . " WHERE id=$albumid";
+						$query = "SELECT folder, show FROM " . prefix('albums') . " WHERE id=$albumid";
 						$row2 = query_single_row($query); // id is unique
 						if ($row2) {
 							$albumname = $row2['folder'];
@@ -1963,10 +1963,10 @@ class SearchEngine {
 	private function cacheSearch($criteria, $found) {
 		if (SEARCH_CACHE_DURATION) {
 			$criteria = serialize($criteria);
-			$sql = 'SELECT `id`, `data`, `date` FROM ' . prefix('search_cache') . ' WHERE `criteria` = ' . db_quote($criteria);
+			$sql = 'SELECT "id", "data", "date" FROM ' . prefix('search_cache') . ' WHERE criteria = ' . db_quote($criteria);
 			$result = query_single_row($sql);
 			if ($result) {
-				$sql = 'UPDATE ' . prefix('search_cache') . ' SET `data` = ' . db_quote(serialize($found)) . ', `date` = ' . db_quote(date('Y-m-d H:m:s')) . ' WHERE `id` = ' . $result['id'];
+				$sql = 'UPDATE ' . prefix('search_cache') . ' SET "data" = ' . db_quote(serialize($found)) . ', "date" = ' . db_quote(date('Y-m-d H:m:s')) . ' WHERE id = ' . $result['id'];
 				query($sql);
 			} else {
 				$sql = 'INSERT INTO ' . prefix('search_cache') . ' (criteria, data, date) VALUES (' . db_quote($criteria) . ', ' . db_quote(serialize($found)) . ', ' . db_quote(date('Y-m-d H:m:s')) . ')';
@@ -1982,11 +1982,11 @@ class SearchEngine {
 	 */
 	private function getCachedSearch($criteria) {
 		if (SEARCH_CACHE_DURATION) {
-			$sql = 'SELECT `id`, `date`, `data` FROM ' . prefix('search_cache') . ' WHERE `criteria` = ' . db_quote(serialize($criteria));
+			$sql = 'SELECT "id", "date", "data" FROM ' . prefix('search_cache') . ' WHERE "criteria" = ' . db_quote(serialize($criteria));
 			$result = query_single_row($sql);
 			if ($result) {
 				if ((time() - strtotime($result['date'])) > SEARCH_CACHE_DURATION * 60) {
-					query('DELETE FROM ' . prefix('search_cache') . ' WHERE `id` = ' . $result['id']);
+					query('DELETE FROM ' . prefix('search_cache') . ' WHERE "id" = ' . $result['id']);
 				} else {
 					if ($result = getSerializedArray($result['data'])) {
 						return $result;
@@ -2006,11 +2006,11 @@ class SearchEngine {
 		} else {
 			$criteria = serialize(array('item' => $table = $obj->table));
 			preg_match('~.*{(.*)}~', $criteria, $matches);
-			$criteria = '`criteria` LIKE ' . db_quote('%' . $matches[1] . '%');
+			$criteria = '"criteria" LIKE ' . db_quote('%' . $matches[1] . '%');
 			if ($table == 'albums') {
 				$album = serialize(array('item' => 'images'));
 				preg_match('~.*{(.*)}~', $album, $matches);
-				$criteria .= ' OR `criteria` LIKE ' . db_quote('%' . $matches[1] . '%');
+				$criteria .= ' OR "criteria" LIKE ' . db_quote('%' . $matches[1] . '%');
 			}
 			query('DELETE FROM ' . prefix('search_cache') . ' WHERE ' . $criteria);
 		}

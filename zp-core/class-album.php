@@ -590,9 +590,9 @@ class AlbumBase extends MediaObject {
 	function remove() {
 		$rslt = false;
 		if (parent::remove()) {
-			query("DELETE FROM " . prefix('options') . "WHERE `ownerid`=" . $this->id);
-			query("DELETE FROM " . prefix('comments') . "WHERE `type`='albums' AND `ownerid`=" . $this->id);
-			query("DELETE FROM " . prefix('obj_to_tag') . "WHERE `type`='albums' AND `objectid`=" . $this->id);
+			query("DELETE FROM " . prefix('options') . "WHERE ownerid=" . $this->id);
+			query("DELETE FROM " . prefix('comments') . "WHERE \"type\"='albums' AND ownerid=" . $this->id);
+			query("DELETE FROM " . prefix('obj_to_tag') . "WHERE \"type\"='albums' AND objectid=" . $this->id);
 			$rslt = true;
 			$filestoremove = safe_glob(substr($this->localpath, 0, -1) . '.*');
 			foreach ($filestoremove as $file) {
@@ -1011,7 +1011,7 @@ class AlbumBase extends MediaObject {
 			$mine = $this->subRights() & (MANAGED_OBJECT_RIGHTS_EDIT | MANAGED_OBJECT_RIGHTS_VIEW);
 		}
 		$sortkey = $this->getImageSortKey($sorttype);
-		if ((trim($sortkey . '`') != 'sort_order') || ($sortkey == 'RAND()')) {
+		if ((trim($sortkey . '"') != 'sort_order') || ($sortkey == 'RAND()')) {
 			// manual sort is always ascending
 			$order = false;
 		} else {
@@ -1025,7 +1025,7 @@ class AlbumBase extends MediaObject {
 				}
 			}
 		}
-		$sql = "SELECT * FROM " . prefix("images") . " WHERE `albumid`= " . $this->getID() . ' ORDER BY ' . $sortkey;
+		$sql = "SELECT * FROM " . prefix("images") . " WHERE albumid= " . $this->getID() . ' ORDER BY ' . $sortkey;
 		if ($order)
 			$sql .= ' DESC';
 		$result = query($sql);
@@ -1038,8 +1038,8 @@ class AlbumBase extends MediaObject {
 				unset($images[$key]);
 			} else { // the image no longer exists
 				$id = $row['id'];
-				query("DELETE FROM " . prefix('images') . " WHERE `id`=$id"); // delete the record
-				query("DELETE FROM " . prefix('comments') . " WHERE `type` ='images' AND `ownerid`= '$id'"); // remove image comments
+				query("DELETE FROM " . prefix('images') . " WHERE id=$id"); // delete the record
+				query("DELETE FROM " . prefix('comments') . " WHERE \"type\" ='images' AND ownerid= '$id'"); // remove image comments
 			}
 		}
 		db_free_result($result);
@@ -1049,7 +1049,7 @@ class AlbumBase extends MediaObject {
 			$results[] = $imageobj->getData();
 		}
 		// now put the results into the right order
-		$results = sortByKey($results, str_replace('`', '', $sortkey), $order);
+		$results = sortByKey($results, str_replace('"', '', $sortkey), $order);
 		// the results are now in the correct order
 		$images_ordered = array();
 		foreach ($results as $key => $row) {
@@ -1308,9 +1308,9 @@ class Album extends AlbumBase {
 			}
 			chdir($curdir);
 			clearstatcache();
-			query("DELETE FROM " . prefix('options') . "WHERE `ownerid`=" . $this->id);
-			query("DELETE FROM " . prefix('comments') . "WHERE `type`='albums' AND `ownerid`=" . $this->id);
-			query("DELETE FROM " . prefix('obj_to_tag') . "WHERE `type`='albums' AND `objectid`=" . $this->id);
+			query("DELETE FROM " . prefix('options') . "WHERE ownerid=" . $this->id);
+			query("DELETE FROM " . prefix('comments') . "WHERE \"type\"='albums' AND ownerid=" . $this->id);
+			query("DELETE FROM " . prefix('obj_to_tag') . "WHERE \"type\"='albums' AND objectid=" . $this->id);
 			$success = true;
 			$filestoremove = safe_glob(substr($this->localpath, 0, strrpos($this->localpath, '.')) . '.*');
 			foreach ($filestoremove as $file) {
@@ -1404,7 +1404,7 @@ class Album extends AlbumBase {
 	function garbageCollect($deep = false) {
 		if (is_null($this->images))
 			$this->getImages();
-		$result = query("SELECT * FROM " . prefix('images') . " WHERE `albumid` = '" . $this->id . "'");
+		$result = query("SELECT * FROM " . prefix('images') . " WHERE albumid = '" . $this->id . "'");
 		$dead = array();
 		$live = array();
 
@@ -1426,18 +1426,18 @@ class Album extends AlbumBase {
 		db_free_result($result);
 
 		if (count($dead) > 0) {
-			$sql = "DELETE FROM " . prefix('images') . " WHERE `id` = '" . array_pop($dead) . "'";
-			$sql2 = "DELETE FROM " . prefix('comments') . " WHERE `type`='albums' AND `ownerid` = '" . array_pop($dead) . "'";
+			$sql = "DELETE FROM " . prefix('images') . " WHERE id = '" . array_pop($dead) . "'";
+			$sql2 = "DELETE FROM " . prefix('comments') . " WHERE \"type\"='albums' AND ownerid = '" . array_pop($dead) . "'";
 			foreach ($dead as $id) {
-				$sql .= " OR `id` = '$id'";
-				$sql2 .= " OR `ownerid` = '$id'";
+				$sql .= " OR id = '$id'";
+				$sql2 .= " OR ownerid = '$id'";
 			}
 			query($sql);
 			query($sql2);
 		}
 
 		// Get all sub-albums and make sure they exist.
-		$result = query("SELECT * FROM " . prefix('albums') . " WHERE `folder` LIKE " . db_quote(db_LIKE_escape($this->name) . '%'));
+		$result = query("SELECT * FROM " . prefix('albums') . " WHERE folder LIKE " . db_quote(db_LIKE_escape($this->name) . '%'));
 		$dead = array();
 		$live = array();
 		// Does the dirname from the db row exist on disk?
@@ -1450,11 +1450,11 @@ class Album extends AlbumBase {
 		}
 		db_free_result($result);
 		if (count($dead) > 0) {
-			$sql = "DELETE FROM " . prefix('albums') . " WHERE `id` = '" . array_pop($dead) . "'";
-			$sql2 = "DELETE FROM " . prefix('comments') . " WHERE `type`='albums' AND `ownerid` = '" . array_pop($dead) . "'";
+			$sql = "DELETE FROM " . prefix('albums') . " WHERE id = '" . array_pop($dead) . "'";
+			$sql2 = "DELETE FROM " . prefix('comments') . " WHERE \"type\"='albums' AND ownerid = '" . array_pop($dead) . "'";
 			foreach ($dead as $albumid) {
-				$sql .= " OR `id` = '$albumid'";
-				$sql2 .= " OR `ownerid` = '$albumid'";
+				$sql .= " OR id = '$albumid'";
+				$sql2 .= " OR ownerid = '$albumid'";
 			}
 			query($sql);
 			query($sql2);

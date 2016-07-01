@@ -40,7 +40,7 @@ function db_field($string) {
  */
 function getDBTables() {
 	$tables = array();
-	$prefix = trim(prefix(), '`');
+	$prefix = trim(prefix(), '"');
 	$resource = db_show('tables');
 	if ($resource) {
 		$result = array();
@@ -359,7 +359,7 @@ function getWhereClause($unique_set) {
 		return ' ';
 	$where = ' WHERE';
 	foreach ($unique_set as $var => $value) {
-		$where .= ' `' . $var . '` = ' . db_quote($value) . ' AND';
+		$where .= ' "' . $var . '" = ' . db_quote($value) . ' AND';
 	}
 	return substr($where, 0, -4);
 }
@@ -376,7 +376,7 @@ function getSetClause($new_unique_set) {
 	$i = 0;
 	$set = ' SET';
 	foreach ($new_unique_set as $var => $value) {
-		$set .= ' `' . $var . '`=';
+		$set .= ' "' . $var . '"=';
 		if (is_null($value)) {
 			$set .= 'NULL';
 		} else {
