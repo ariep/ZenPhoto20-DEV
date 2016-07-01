@@ -56,19 +56,19 @@ if ($result) {
 
 //migrate "publish" dates
 foreach (array('albums', 'images', 'news', 'pages') as $table) {
-	$sql = 'UPDATE ' . prefix($table) . ' SET publishdate=NULL WHERE publishdate ="0000-00-00 00:00:00"';
+	$sql = 'UPDATE ' . prefix($table) . ' SET publishdate = NULL WHERE publishdate = \'0000-00-00 00:00:00\'';
 	query($sql);
-	$sql = 'UPDATE ' . prefix($table) . ' SET expiredate=NULL WHERE expiredate ="0000-00-00 00:00:00"';
+	$sql = 'UPDATE ' . prefix($table) . ' SET expiredate = NULL WHERE expiredate = \'0000-00-00 00:00:00\'';
 	query($sql);
-	$sql = 'UPDATE ' . prefix($table) . ' SET publishdate="date" WHERE publishdate IS NULL AND show=1';
+	$sql = 'UPDATE ' . prefix($table) . ' SET publishdate = "date" WHERE publishdate IS NULL AND show = 1';
 	query($sql);
 }
 foreach (array('news', 'pages') as $table) {
-	$sql = 'UPDATE ' . prefix($table) . ' SET lastchange="date" WHERE lastchange IS NULL';
+	$sql = 'UPDATE ' . prefix($table) . ' SET lastchange = "date" WHERE lastchange IS NULL';
 	query($sql);
 }
 // published albums where both the publishdate and the date were NULL
-$sql = 'SELECT mtime,id FROM ' . prefix('albums') . ' WHERE publishdate IS NULL AND show=1';
+$sql = 'SELECT mtime,id FROM ' . prefix('albums') . ' WHERE publishdate IS NULL AND show = 1';
 $result = query($sql);
 if ($result) {
 	while ($row = db_fetch_assoc($result)) {
@@ -80,7 +80,7 @@ if ($result) {
 $result = db_list_fields('images');
 $where = '';
 if (isset($result['EXIFOrientation'])) {
-	$where = '(rotation IS NULL AND EXIFOrientation!="")';
+	$where = '(rotation IS NULL AND EXIFOrientation != \'\')';
 }
 if (isset($result['EXIFGPSLatitude'])) {
 	$where .= ' OR (GPSLatitude IS NULL AND NOT EXIFGPSLatitude IS NULL)';
@@ -412,7 +412,7 @@ if (file_exists(SERVERPATH . '/' . THEMEFOLDER . '/effervescence_plus')) {
 		$_zp_gallery->setCurrentTheme('effervescence+');
 		$_zp_gallery->save();
 	}
-	$options = query_full_array('SELECT LCASE(name) as name, value FROM ' . prefix('options') . ' WHERE theme="effervescence_plus"');
+	$options = query_full_array('SELECT LCASE(name) as name, value FROM ' . prefix('options') . ' WHERE theme = \'effervescence_plus\'');
 	foreach ($options as $option) {
 		setThemeOption($option['name'], $option['value'], NULL, 'effervescence+', true);
 	}
@@ -445,7 +445,7 @@ if (file_exists(SERVERPATH . '/' . THEMEFOLDER . '/effervescence_plus')) {
 if (getOption('search_space_is_OR')) {
 	setOption('search_space_is', '|');
 }
-query('DELETE FROM ' . prefix('options') . ' WHERE  name ="search_space_is_OR"', false);
+query('DELETE FROM ' . prefix('options') . ' WHERE  name = \'search_space_is_OR\'', false);
 
 if (!file_exists(SERVERPATH . '/favicon.ico')) {
 	@copy(SERVERPATH . '/' . ZENFOLDER . '/images/favicon.ico', SERVERPATH . '/favicon.ico');
