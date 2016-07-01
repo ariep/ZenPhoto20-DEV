@@ -153,7 +153,7 @@ if ($alb) {
 }
 $custom = array();
 
-$result = query('SELECT * FROM ' . prefix('plugin_storage') . ' WHERE `type` = "cacheManager" ORDER BY `aux`');
+$result = query('SELECT * FROM ' . prefix('plugin_storage') . ' WHERE "type" = \'cacheManager\' ORDER BY "aux"');
 while ($row = db_fetch_assoc($result)) {
 	$row = getSerializedArray($row['data']);
 	$custom[] = $row;

@@ -87,7 +87,7 @@ class favoritesHandler {
 			$list[$file] = str_replace('.php', '', $file);
 		}
 		$list = array_diff($list, standardScripts());
-		$all = query_full_array('SELECT `aux` FROM ' . prefix('plugin_storage') . ' WHERE `type`="favorites"');
+		$all = query_full_array('SELECT "aux" FROM ' . prefix('plugin_storage') . ' WHERE "type"=\'favorites\'');
 		$disable = false;
 		$text = gettext('If enabled a user may have multiple (named) favorites.');
 		foreach ($all as $aux) {

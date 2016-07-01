@@ -173,10 +173,10 @@ class DownloadList {
 	 * @param bool $nocountupdate false if the downloadcount should not be increased and only the entry be added to the db if it does not already exist
 	 */
 	static function updateListItemCount($path) {
-		$checkitem = query_single_row("SELECT `data` FROM " . prefix('plugin_storage') . " WHERE `aux` = " . db_quote($path) . " AND `type` = 'downloadList'");
+		$checkitem = query_single_row("SELECT \"data\" FROM " . prefix('plugin_storage') . " WHERE \"aux\" = " . db_quote($path) . " AND \"type\" = 'downloadList'");
 		if ($checkitem) {
 			$downloadcount = $checkitem['data'] + 1;
-			query("UPDATE " . prefix('plugin_storage') . " SET `data` = " . $downloadcount . ", `type` = 'downloadList' WHERE `aux` = " . db_quote($path) . " AND `type` = 'downloadList'");
+			query("UPDATE " . prefix('plugin_storage') . " SET \"data\" = " . $downloadcount . ", \"type\" = 'downloadList' WHERE \"aux\" = " . db_quote($path) . " AND \"type\" = 'downloadList'");
 		}
 	}
 
@@ -185,9 +185,9 @@ class DownloadList {
 	 * @param string $path Path of the download item
 	 */
 	static function addListItem($path) {
-		$checkitem = query_single_row("SELECT `data` FROM " . prefix('plugin_storage') . " WHERE `aux` = " . db_quote($path) . " AND `type` = 'downloadList'");
+		$checkitem = query_single_row("SELECT \"data\" FROM " . prefix('plugin_storage') . " WHERE \"aux\" = " . db_quote($path) . " AND \"type\" = 'downloadList'");
 		if (!$checkitem) {
-			query("INSERT INTO " . prefix('plugin_storage') . " (`type`,`aux`,`data`) VALUES ('downloadList'," . db_quote($path) . ",'0')");
+			query("INSERT INTO " . prefix('plugin_storage') . " (\"type\",\"aux\",\"data\") VALUES ('downloadList'," . db_quote($path) . ",'0')");
 		}
 	}
 
@@ -196,7 +196,7 @@ class DownloadList {
 	 */
 
 	static function getListItemsFromDB() {
-		$downloaditems = query_full_array("SELECT id, `aux`, `data` FROM " . prefix('plugin_storage') . " WHERE `type` = 'downloadList'");
+		$downloaditems = query_full_array("SELECT id, \"aux\", \"data\" FROM " . prefix('plugin_storage') . " WHERE \"type\" = 'downloadList'");
 		return $downloaditems;
 	}
 
@@ -205,7 +205,7 @@ class DownloadList {
 	 */
 
 	static function getListItemFromDB($file) {
-		$downloaditem = query_single_row($sql = "SELECT id, `aux`, `data` FROM " . prefix('plugin_storage') . " WHERE `type` = 'downloadList' AND `aux` = " . db_quote($file));
+		$downloaditem = query_single_row($sql = "SELECT id, \"aux\", \"data\" FROM " . prefix('plugin_storage') . " WHERE \"type\" = 'downloadList' AND \"aux\" = " . db_quote($file));
 		return $downloaditem;
 	}
 
@@ -215,7 +215,7 @@ class DownloadList {
 	 * @return bool|string
 	 */
 	static function getItemID($path) {
-		$downloaditem = query_single_row("SELECT id, `aux`, `data` FROM " . prefix('plugin_storage') . " WHERE `type` = 'downloadList' AND `aux` = " . db_quote($path));
+		$downloaditem = query_single_row("SELECT id, \"aux\", \"data\" FROM " . prefix('plugin_storage') . " WHERE \"type\" = 'downloadList' AND \"aux\" = " . db_quote($path));
 		if ($downloaditem) {
 			return $downloaditem['id'];
 		} else {
@@ -683,7 +683,7 @@ if (isset($_GET['download'])) {
 		DownloadList::updateListItemCount($item . '.zip');
 		exitZP();
 	} else {
-		$path = query_single_row("SELECT `aux` FROM " . prefix('plugin_storage') . " WHERE id=" . (int) $item);
+		$path = query_single_row("SELECT \"aux\" FROM " . prefix('plugin_storage') . " WHERE id=" . (int) $item);
 		if (array_key_exists('aux', $path) && file_exists($_downloadFile = internalToFilesystem($path['aux']))) {
 			require_once(SERVERPATH . '/' . ZENFOLDER . '/lib-MimeTypes.php');
 			DownloadList::updateListItemCount($_downloadFile);

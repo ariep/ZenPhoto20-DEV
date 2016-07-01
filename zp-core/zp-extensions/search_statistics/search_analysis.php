@@ -13,7 +13,7 @@ admin_securityChecks(OVERVIEW_RIGHTS, currentRelativeURL());
 if (isset($_GET['reset'])) {
 	admin_securityChecks(ADMIN_RIGHTS, currentRelativeURL());
 	XSRFdefender('search_statistics');
-	$sql = 'DELETE FROM ' . prefix('plugin_storage') . ' WHERE `type`="search_statistics"';
+	$sql = 'DELETE FROM ' . prefix('plugin_storage') . ' WHERE "type"=\'search_statistics\'';
 	query($sql);
 	header('Location: ' . FULLWEBPATH . '/' . ZENFOLDER . '/' . PLUGIN_FOLDER . '/search_statistics/search_analysis.php');
 	exitZP();
@@ -22,7 +22,7 @@ $zenphoto_tabs['overview']['subtabs'] = array(gettext('Analysis') => '');
 printAdminHeader('overview', 'analysis');
 echo '</head>';
 
-$sql = 'SELECT * FROM ' . prefix('plugin_storage') . ' WHERE `type`="search_statistics"';
+$sql = 'SELECT * FROM ' . prefix('plugin_storage') . ' WHERE "type"=\'search_statistics\'';
 $data = query($sql);
 $ip_maxvalue = $criteria_maxvalue = $criteria_maxvalue_f = $terms_maxvalue = 1;
 $results_f = $results = $terms = $sites = array();

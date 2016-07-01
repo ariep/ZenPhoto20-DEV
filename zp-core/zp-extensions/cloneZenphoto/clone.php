@@ -127,9 +127,9 @@ if ($success) {
 	array_unshift($msg, '<h2>' . sprintf(gettext('Successful clone to %s'), $folder) . '</h2>' . "\n");
 	list($diff, $needs) = checkSignature(4);
 	if (empty($needs)) {
-		$rslt = query_single_row('SELECT * FROM ' . prefix('plugin_storage') . ' WHERE `type`="clone" AND `aux`=' . db_quote(rtrim($folder, '/')));
+		$rslt = query_single_row('SELECT * FROM ' . prefix('plugin_storage') . ' WHERE "type"=\'clone\' AND "aux"=' . db_quote(rtrim($folder, '/')));
 		if (empty($rslt)) {
-			query('INSERT INTO ' . prefix('plugin_storage') . '(`type`,`aux`,`data`) VALUES("clone",' . db_quote(rtrim($folder, '/')) . ',' . db_quote(trim($newinstall, '/')) . ')');
+			query('INSERT INTO ' . prefix('plugin_storage') . '("type","aux","data") VALUES(\'clone\',' . db_quote(rtrim($folder, '/')) . ',' . db_quote(trim($newinstall, '/')) . ')');
 		}
 		$cloneid = bin2hex(rtrim($newinstall, '/'));
 		$_SESSION['clone'][$cloneid] = array(

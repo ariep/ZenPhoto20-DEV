@@ -60,13 +60,13 @@ if ($plugin_disable) {
 		static function clones() {
 			global $_zp_current_admin_obj;
 			$clones = array();
-			if ($result = query('SELECT * FROM ' . prefix('plugin_storage') . ' WHERE `type`="clone"')) {
+			if ($result = query('SELECT * FROM ' . prefix('plugin_storage') . ' WHERE "type"="clone"')) {
 				while ($row = db_fetch_assoc($result)) {
 					if (file_exists($row['aux'] . '/' . DATA_FOLDER . '/zenphoto.cfg.php')) {
 						$clones[$row['aux']] = $row['data'] . '/';
 						$_SESSION['admin'][bin2hex($row['aux'])] = serialize($_zp_current_admin_obj);
 					} else {
-						query('DELETE FROM ' . prefix('plugin_storage') . ' WHERE `id` = ' . $row['id']);
+						query('DELETE FROM ' . prefix('plugin_storage') . ' WHERE id = ' . $row['id']);
 					}
 				}
 				db_free_result($result);

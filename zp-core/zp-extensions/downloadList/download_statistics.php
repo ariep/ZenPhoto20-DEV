@@ -31,7 +31,7 @@ function printBarGraph() {
 	//$limit = $from_number.",".$to_number;
 	$bargraphmaxsize = 90;
 	$maxvalue = 0;
-	$items = query_full_array("SELECT `aux`,`data` FROM " . prefix('plugin_storage') . " WHERE `type` = 'downloadList' AND `data` != 0 ORDER BY `data` DESC");
+	$items = query_full_array("SELECT \"aux\",\"data\" FROM " . prefix('plugin_storage') . " WHERE \"type\" = 'downloadList' AND \"data\" != 0 ORDER BY \"data\" DESC");
 	$items = sortMultiArray($items, 'data', true, true, false, false);
 	if ($items) {
 		$maxvalue = $items[0]['data'];
@@ -102,12 +102,12 @@ echo '</head>';
 				<?php
 				if (isset($_GET['removeoutdateddownloads'])) {
 					XSRFdefender('removeoutdateddownloads');
-					$sql = "SELECT * FROM " . prefix('plugin_storage') . " WHERE `type`='downloadList'";
+					$sql = "SELECT * FROM " . prefix('plugin_storage') . " WHERE \"type\"='downloadList'";
 					$result = query_full_array($sql);
 					if ($result) {
 						foreach ($result as $row) {
 							if (!file_exists(internalToFilesystem($row['aux']))) {
-								query('DELETE FROM ' . prefix('plugin_storage') . ' WHERE `id`=' . $row['id']);
+								query('DELETE FROM ' . prefix('plugin_storage') . ' WHERE id=' . $row['id']);
 							}
 						}
 					}
@@ -115,7 +115,7 @@ echo '</head>';
 				}
 				if (isset($_GET['removealldownloads'])) {
 					XSRFdefender('removealldownloads');
-					$sql = "DELETE FROM " . prefix('plugin_storage') . ' WHERE `type`="downloadList"';
+					$sql = "DELETE FROM " . prefix('plugin_storage') . ' WHERE "type"=\'downloadList\'';
 					query($sql);
 					echo '<p class="messagebox fade-message">' . gettext('All download file entries cleared from the database') . '</p>';
 				}

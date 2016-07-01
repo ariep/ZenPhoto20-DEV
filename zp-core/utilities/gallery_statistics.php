@@ -124,7 +124,7 @@ function printBarGraph($sortorder = "mostimages", $type = "albums", $from_number
 		case "popular":
 			switch ($type) {
 				case 'rss':
-					$itemssorted = query_full_array("SELECT `type`,`aux`, `data` FROM " . prefix('plugin_storage') . " WHERE `type` = 'rsshitcounter' ORDER BY CONVERT(data,UNSIGNED) DESC LIMIT " . $limit);
+					$itemssorted = query_full_array("SELECT \"type\",\"aux\", \"data\" FROM " . prefix('plugin_storage') . " WHERE \"type\" = 'rsshitcounter' ORDER BY CONVERT(data,UNSIGNED) DESC LIMIT " . $limit);
 					if (empty($itemssorted)) {
 						$maxvalue = 0;
 					} else {
@@ -375,7 +375,7 @@ function printBarGraph($sortorder = "mostimages", $type = "albums", $from_number
 			case "images":
 
 				if ($item['albumid']) {
-					$getalbumfolder = query_single_row("SELECT title, folder, `show` from " . prefix("albums") . " WHERE id = " . $item['albumid']);
+					$getalbumfolder = query_single_row("SELECT title, folder, show from " . prefix("albums") . " WHERE id = " . $item['albumid']);
 					if ($sortorder === "latest") {
 						$value = "<span";
 						if ($getalbumfolder['show'] != "1") {

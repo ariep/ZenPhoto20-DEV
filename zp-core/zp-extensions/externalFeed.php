@@ -118,7 +118,7 @@ class externalFeed_options {
 
 	function handleOption($option, $currentValue) {
 		$count = 0;
-		$result = query('SELECT * FROM ' . prefix('plugin_storage') . ' WHERE `type`="externalFeed" ORDER BY `aux`');
+		$result = query('SELECT * FROM ' . prefix('plugin_storage') . ' WHERE "type"=\'externalFeed\' ORDER BY "aux"');
 		if ($result) {
 			$list = array();
 			while ($row = db_fetch_assoc($result)) {
@@ -140,12 +140,12 @@ class externalFeed_options {
 		if ($site = getOption('externalFeed_site')) {
 			purgeOption('externalFeed_site');
 			$key = md5($site . serialize($_SERVER));
-			query('INSERT INTO ' . prefix('plugin_storage') . ' (`type`, `aux`,`data`) VALUES ("externalFeed",' . db_quote($site) . ',' . db_quote($key) . ') ON DUPLICATE KEY UPDATE `data`=' . db_quote($key));
+			query('INSERT INTO ' . prefix('plugin_storage') . ' ("type", "aux","data") VALUES (\'externalFeed\',' . db_quote($site) . ',' . db_quote($key) . ') ON DUPLICATE KEY UPDATE "data"=' . db_quote($key));
 		}
 		foreach ($_POST as $option => $value) {
 			if (strpos($option, 'externalFeed_delete_') !== false) {
 				$site = str_replace('externalFeed_delete_', '', $option);
-				query('DELETE FROM ' . prefix('plugin_storage') . ' WHERE `type`="externalFeed" AND `aux`=' . db_quote($site));
+				query('DELETE FROM ' . prefix('plugin_storage') . ' WHERE "type"=\'externalFeed\' AND "aux"=' . db_quote($site));
 			}
 		}
 		return false;
@@ -176,7 +176,7 @@ class ExternalFeed extends feed {
 
 
 		if ($this->key) {
-			$result = query_single_row('SELECT * FROM ' . prefix('plugin_storage') . ' WHERE `type`="externalFeed" AND `data`=' . db_quote($this->key));
+			$result = query_single_row('SELECT * FROM ' . prefix('plugin_storage') . ' WHERE "type"=\'externalFeed\' AND "data"=' . db_quote($this->key));
 			if (!$result) {
 				$this->key = NULL;
 			}
@@ -343,7 +343,7 @@ class ExternalFeed extends feed {
 			$title = $albumobj->getTitle($this->locale);
 
 			$filechangedate = filectime(ALBUM_FOLDER_SERVERPATH . internalToFilesystem($albumobj->name));
-			$latestimage = query_single_row("SELECT mtime FROM " . prefix('images') . " WHERE albumid = " . $albumobj->getID() . " AND `show` = 1 ORDER BY id DESC");
+			$latestimage = query_single_row("SELECT mtime FROM " . prefix('images') . " WHERE albumid = " . $albumobj->getID() . " AND show = 1 ORDER BY id DESC");
 			if ($latestimage && $this->sortorder == 'latestupdated') {
 				$count = db_count('images', "WHERE albumid = " . $albumobj->getID() . " AND mtime = " . $latestimage['mtime']);
 			} else {
@@ -494,7 +494,7 @@ class ExternalFeed extends feed {
 				<?php
 				if ($this->key) {
 					$key = md5($this->key . serialize($_SERVER));
-					query('UPDATE ' . prefix('plugin_storage') . ' SET `data`=' . db_quote($key) . ' WHERE `type`="externalFeed" AND `data`=' . db_quote($this->key));
+					query('UPDATE ' . prefix('plugin_storage') . ' SET "data"=' . db_quote($key) . ' WHERE "type"=\'externalFeed\' AND "data"=' . db_quote($this->key));
 					?>
 					<accesskey><?php echo $key; ?></accesskey>
 					<?php

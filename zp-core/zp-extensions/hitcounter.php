@@ -20,13 +20,13 @@ if (!defined('OFFSET_PATH')) {
 			}
 			zp_session_start();
 			XSRFdefender('hitcounter');
-			query('UPDATE ' . prefix('albums') . ' SET `hitcounter`= 0');
-			query('UPDATE ' . prefix('images') . ' SET `hitcounter`= 0');
-			query('UPDATE ' . prefix('news') . ' SET `hitcounter`= 0');
-			query('UPDATE ' . prefix('pages') . ' SET `hitcounter`= 0');
-			query('UPDATE ' . prefix('news_categories') . ' SET `hitcounter`= 0');
-			query('UPDATE ' . prefix('options') . ' SET `value`= 0 WHERE `name` LIKE "Page-Hitcounter-%"');
-			query("DELETE FROM " . prefix('plugin_storage') . " WHERE `type` = 'rsshitcounter'");
+			query('UPDATE ' . prefix('albums') . ' SET hitcounter= 0');
+			query('UPDATE ' . prefix('images') . ' SET hitcounter= 0');
+			query('UPDATE ' . prefix('news') . ' SET hitcounter= 0');
+			query('UPDATE ' . prefix('pages') . ' SET hitcounter= 0');
+			query('UPDATE ' . prefix('news_categories') . ' SET hitcounter= 0');
+			query('UPDATE ' . prefix('options') . ' SET value= 0 WHERE name LIKE \'Page-Hitcounter-%\'');
+			query("DELETE FROM " . prefix('plugin_storage') . " WHERE \"type\" = 'rsshitcounter'");
 			header('Location: ' . FULLWEBPATH . '/' . ZENFOLDER . '/admin.php?action=external&msg=' . gettext('All hitcounters have been set to zero.'));
 			exitZP();
 		}

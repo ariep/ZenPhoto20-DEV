@@ -20,12 +20,12 @@ class defaultCodeblocks {
 	var $codeblocks;
 
 	function __construct() {
-		$blocks = query_single_row("SELECT id, `aux`, `data` FROM " . prefix('plugin_storage') . " WHERE `type` = 'defaultCodeblocks'");
+		$blocks = query_single_row("SELECT id, \"aux\", \"data\" FROM " . prefix('plugin_storage') . " WHERE \"type\" = 'defaultCodeblocks'");
 		if ($blocks) {
 			$this->codeblocks = $blocks['data'];
 		} else {
 			$this->codeblocks = serialize(array());
-			$sql = 'INSERT INTO ' . prefix('plugin_storage') . ' (`type`,`aux`,`data`) VALUES ("defaultCodeblocks","",' . db_quote($this->codeblocks) . ')';
+			$sql = 'INSERT INTO ' . prefix('plugin_storage') . ' ("type","aux","data") VALUES (\'defaultCodeblocks\',\'\',' . db_quote($this->codeblocks) . ')';
 			query($sql);
 		}
 	}
@@ -73,7 +73,7 @@ class defaultCodeblocks {
 	 */
 	function setCodeblock($cb) {
 		$this->codeblocks = zpFunctions::tagURLs($cb);
-		$sql = 'UPDATE ' . prefix('plugin_storage') . ' SET `data`=' . db_quote($this->codeblocks) . ' WHERE `type`="defaultCodeblocks"';
+		$sql = 'UPDATE ' . prefix('plugin_storage') . ' SET "data"=' . db_quote($this->codeblocks) . ' WHERE "type"=\'defaultCodeblocks\'';
 		query($sql);
 	}
 

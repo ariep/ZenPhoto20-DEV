@@ -308,13 +308,13 @@ class ipBlocker {
 	 */
 	static function ipGate($type) {
 		//	clean out expired attempts
-		$sql = 'DELETE FROM ' . prefix('plugin_storage') . ' WHERE `type` LIKE "ipBlocker%" AND `aux` < "' . (time() - getOption('ipBlocker_timeout') * 60) . '"';
+		$sql = 'DELETE FROM ' . prefix('plugin_storage') . ' WHERE "type" LIKE \'ipBlocker%\' AND "aux" < \'' . (time() - getOption('ipBlocker_timeout') * 60) . '\'';
 		query($sql);
 		//	add this attempt
-		$sql = 'INSERT INTO ' . prefix('plugin_storage') . ' (`type`, `aux`,`data`) VALUES ("ipBlocker_' . $type . '", "' . time() . '","' . getUserIP() . '")';
+		$sql = 'INSERT INTO ' . prefix('plugin_storage') . ' ("type", "aux","data") VALUES (\'ipBlocker_' . $type . '\', \'' . time() . '\',\'' . getUserIP() . '\')';
 		query($sql);
 		//	check how many times this has happened recently
-		$count = db_count('plugin_storage', 'WHERE `type`="ipBlocker_' . $type . '" AND `data`="' . getUserIP() . '"');
+		$count = db_count('plugin_storage', 'WHERE "type"=\'ipBlocker_' . $type . '\' AND "data"=\'' . getUserIP() . '\'');
 		if ($count >= ($threshold = getOption('ipBlocker_threshold'))) {
 			$ip = getUserIP();
 			zp_apply_filter('security_misc', 2, $type, 'ipBlocker', gettext('Suspended'));
@@ -327,7 +327,7 @@ class ipBlocker {
 			}
 			$block[$ip] = time();
 			setOption('ipBlocker_forbidden', serialize($block));
-			$sql = 'DELETE FROM ' . prefix('plugin_storage') . ' WHERE `type` LIKE "ipBlocker%" AND `data`="' . $ip . '"';
+			$sql = 'DELETE FROM ' . prefix('plugin_storage') . ' WHERE "type" LIKE \'ipBlocker%\' AND "data"=\'' . $ip . '\'';
 			query($sql);
 		}
 	}

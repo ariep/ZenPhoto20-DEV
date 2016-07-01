@@ -117,7 +117,7 @@ class cacheManager {
 
 	function __construct() {
 		if (OFFSET_PATH == 2) {
-			query('DELETE FROM ' . prefix('plugin_storage') . ' WHERE `type`="cacheManager"');
+			query('DELETE FROM ' . prefix('plugin_storage') . ' WHERE "type"=\'cacheManager\'');
 			self::addThemeCacheSize('admin', ADMIN_THUMB_LARGE, NULL, NULL, ADMIN_THUMB_LARGE, ADMIN_THUMB_LARGE, NULL, NULL, -1);
 			self::addThemeCacheSize('admin', ADMIN_THUMB_MEDIUM, NULL, NULL, ADMIN_THUMB_MEDIUM, ADMIN_THUMB_MEDIUM, NULL, NULL, -1);
 			self::addThemeCacheSize('admin', ADMIN_THUMB_SMALL, NULL, NULL, ADMIN_THUMB_SMALL, ADMIN_THUMB_SMALL, NULL, NULL, -1);
@@ -177,7 +177,7 @@ class cacheManager {
 		global $_zp_gallery;
 		$currenttheme = $_zp_gallery->getCurrentTheme();
 		$custom = array();
-		$result = query('SELECT * FROM ' . prefix('plugin_storage') . ' WHERE `type`="cacheManager" ORDER BY `aux`');
+		$result = query('SELECT * FROM ' . prefix('plugin_storage') . ' WHERE "type"=\'cacheManager\' ORDER BY "aux"');
 		$key = 0;
 		while ($row = db_fetch_assoc($result)) {
 			$theme = $row['aux'];
@@ -305,11 +305,11 @@ class cacheManager {
 				$cache[$matches[2]][$matches[1]] = sanitize(trim($value));
 			}
 		}
-		query('DELETE FROM ' . prefix('plugin_storage') . ' WHERE `type`="cacheManager"');
+		query('DELETE FROM ' . prefix('plugin_storage') . ' WHERE "type"=\'cacheManager\'');
 		foreach ($cache as $cacheimage) {
 			if (!isset($cacheimage['delete']) && count($cacheimage) > 1) {
 				$cacheimage['theme'] = preg_replace("/[\s\"\']+/", "-", $cacheimage['theme']);
-				$sql = 'INSERT INTO ' . prefix('plugin_storage') . ' (`type`, `aux`,`data`) VALUES ("cacheManager",' . db_quote($cacheimage['theme']) . ',' . db_quote(serialize($cacheimage)) . ')';
+				$sql = 'INSERT INTO ' . prefix('plugin_storage') . ' ("type", "aux","data") VALUES (\'cacheManager\',' . db_quote($cacheimage['theme']) . ',' . db_quote(serialize($cacheimage)) . ')';
 				query($sql);
 			}
 		}
@@ -319,7 +319,7 @@ class cacheManager {
 	static function addThemeCacheSize($theme, $size, $width, $height, $cw, $ch, $cx, $cy, $thumb, $watermark = NULL, $effects = NULL, $maxspace = NULL) {
 		$cacheSize = serialize(array('theme' => $theme, 'apply' => false, 'image_size' => $size, 'image_width' => $width, 'image_height' => $height,
 				'crop_width' => $cw, 'crop_height' => $ch, 'crop_x' => $cx, 'crop_y' => $cy, 'thumb' => $thumb, 'wmk' => $watermark, 'gray' => $effects, 'maxspace' => $maxspace, 'valid' => 1));
-		$sql = 'INSERT INTO ' . prefix('plugin_storage') . ' (`type`, `aux`,`data`) VALUES ("cacheManager",' . db_quote($theme) . ',' . db_quote($cacheSize) . ')';
+		$sql = 'INSERT INTO ' . prefix('plugin_storage') . ' ("type", "aux","data") VALUES (\'cacheManager\',' . db_quote($theme) . ',' . db_quote($cacheSize) . ')';
 		query($sql);
 	}
 
@@ -342,7 +342,7 @@ class cacheManager {
 	}
 
 	static function overviewbutton($buttons) {
-		if (query_single_row('SELECT * FROM ' . prefix('plugin_storage') . ' WHERE `type`="cacheManager" LIMIT 1')) {
+		if (query_single_row('SELECT * FROM ' . prefix('plugin_storage') . ' WHERE "type"=\'cacheManager\' LIMIT 1')) {
 			$enable = true;
 			$title = gettext('Finds images that have not been cached and creates the cached versions.');
 		} else {
@@ -422,7 +422,7 @@ class cacheManager {
 
 	static function albumbutton($html, $object, $prefix) {
 		$html .= '<hr />';
-		if (query_single_row('SELECT * FROM ' . prefix('plugin_storage') . ' WHERE `type`="cacheManager" LIMIT 1')) {
+		if (query_single_row('SELECT * FROM ' . prefix('plugin_storage') . ' WHERE "type"=\'cacheManager\' LIMIT 1')) {
 			$disable = '';
 			$title = gettext('Finds images that have not been cached and creates the cached versions.');
 		} else {
@@ -434,7 +434,7 @@ class cacheManager {
 	}
 
 	static function deleteThemeCacheSizes($theme) {
-		query('DELETE FROM ' . prefix('plugin_storage') . ' WHERE `type`="cacheManager" AND `aux`=' . db_quote($theme));
+		query('DELETE FROM ' . prefix('plugin_storage') . ' WHERE "type"=\'cacheManager\' AND "aux"=' . db_quote($theme));
 	}
 
 }

@@ -19,7 +19,7 @@ function updateItemsSortorder() {
 			$level = count($orderlist);
 			$parents[$level] = $id;
 			$myparent = $parents[$level - 1];
-			$sql = "UPDATE " . prefix('menu') . " SET `sort_order` = " . db_quote($sortstring) . ", `parentid`= " . db_quote($myparent) . " WHERE `id`=" . sanitize_numeric($id);
+			$sql = "UPDATE " . prefix('menu') . " SET sort_order = " . db_quote($sortstring) . ", parentid= " . db_quote($myparent) . " WHERE id=" . sanitize_numeric($id);
 			query($sql);
 		}
 		return "<p class='messagebox fade-message'>" . gettext("Sort order saved.") . "</p>";
@@ -292,7 +292,7 @@ function getMenuSetSelector($active) {
  * @param string $menuset chosen menu set
  */
 function publishItem($id, $show, $menuset) {
-	query("UPDATE " . prefix('menu') . " SET `show` = '" . $show . "' WHERE id = " . $id, true . " AND menuset = " . db_quote($menuset));
+	query("UPDATE " . prefix('menu') . " SET show = '" . $show . "' WHERE id = " . $id, true . " AND menuset = " . db_quote($menuset));
 }
 
 /**
@@ -307,13 +307,13 @@ function addSubalbumMenus($menuset, $id, $link, $sort) {
 	$album = newAlbum($link);
 	$show = $album->getShow();
 	$title = $album->getTitle();
-	$sql = "INSERT INTO " . prefix('menu') . " (`link`,`type`,`title`,`show`,`menuset`,`sort_order`, `parentid`) " .
+	$sql = "INSERT INTO " . prefix('menu') . " (link,\"type\",title,show,menuset,sort_order, parentid) " .
 					'VALUES (' . db_quote($link) . ', "album",' . db_quote($album->name) . ', ' . $show . ',' . db_quote($menuset) . ',' . db_quote($sort) . ',' . $id . ')';
 	$result = query($sql, false);
 	if ($result) {
 		$id = db_insert_id();
 	} else {
-		$result = query_single_row('SELECT `id` FROM' . prefix('menu') . ' WHERE `type`="album" AND `link`=' . db_quote($link));
+		$result = query_single_row('SELECT id FROM' . prefix('menu') . ' WHERE "type"=\'album\' AND link=' . db_quote($link));
 		$id = $result['id'];
 	}
 	if (!$album->isDynamic()) {
@@ -378,12 +378,12 @@ function addPagesToDatabase($menuset, $base = NULL) {
 		$show = $item['show'];
 		$link = $item['titlelink'];
 		$parent = $parents[$level - 1];
-		$sql = "INSERT INTO " . prefix('menu') . " (`title`, `link`, `type`, `show`,`menuset`,`sort_order`, `parentid`) " .
-						'VALUES (' . db_quote($item['title']) . ',' . db_quote($link) . ',"page",' . $show . ',' . db_quote($menuset) . ',' . db_quote($order) . ',' . $parent . ')';
+		$sql = "INSERT INTO " . prefix('menu') . " (title, link, \"type\", show,menuset,sort_order, parentid) " .
+						'VALUES (' . db_quote($item['title']) . ',' . db_quote($link) . ',\'page\',' . $show . ',' . db_quote($menuset) . ',' . db_quote($order) . ',' . $parent . ')';
 		if (query($sql, false)) {
 			$id = db_insert_id();
 		} else {
-			$rslt = query_single_row('SELECT `id` FROM' . prefix('menu') . ' WHERE `type`="page" AND `link`="' . $link . '"');
+			$rslt = query_single_row('SELECT id FROM' . prefix('menu') . ' WHERE "type"=\'page\' AND link="' . $link . '"');
 			$id = $rslt['id'];
 		}
 		$parents[$level] = $id;
@@ -416,12 +416,12 @@ function addCategoriesToDatabase($menuset, $base = NULL) {
 		$order = $sortbase . implode('-', $sorts);
 		$link = $item['titlelink'];
 		$parent = $parents[$level - 1];
-		$sql = "INSERT INTO " . prefix('menu') . " (`title`, `link`, `type`, `show`,`menuset`,`sort_order`,`parentid`) " .
+		$sql = "INSERT INTO " . prefix('menu') . " (title, link, \"type\", show,menuset,sort_order,parentid) " .
 						'VALUES (' . db_quote($item['title']) . ',' . db_quote($link) . ',"category", 1,' . db_quote($menuset) . ',' . db_quote($order) . ',' . $parent . ')';
 		if (query($sql, false)) {
 			$id = db_insert_id();
 		} else {
-			$rslt = query_single_row('SELECT `id` FROM' . prefix('menu') . ' WHERE `type`="category" AND `link`="' . $link . '"');
+			$rslt = query_single_row('SELECT id FROM' . prefix('menu') . ' WHERE "type"="category" AND link="' . $link . '"');
 			$id = $rslt['id'];
 		}
 		$parents[$level] = $id;
@@ -453,11 +453,11 @@ function addItem(&$reports) {
 	}
 	switch ($result['type']) {
 		case 'all_items':
-			query("INSERT INTO " . prefix('menu') . " (`title`,`link`,`type`,`show`,`menuset`,`sort_order`) " .
+			query("INSERT INTO " . prefix('menu') . " (title,link,\"type\",show,menuset,sort_order) " .
 							"VALUES ('" . gettext('Home') . "', '" . WEBPATH . '/' . "','galleryindex','1'," . db_quote($menuset) . ",'000')", true);
 			addAlbumsToDatabase($menuset);
 			if (extensionEnabled('zenpage')) {
-				query("INSERT INTO " . prefix('menu') . " (`title`,`link`,`type`,`show`,`menuset`,`sort_order`) " .
+				query("INSERT INTO " . prefix('menu') . " (title,link,\"type\",show,menuset,sort_order) " .
 								"VALUES ('" . gettext('News index') . "', '" . getNewsIndexURL() . "', 'newsindex', '1', " . db_quote($menuset) . ", '001')", true);
 				addPagesToDatabase($menuset);
 				addCategoriesToDatabase($menuset);
@@ -583,7 +583,7 @@ function addItem(&$reports) {
 
 	$count = db_count('menu', 'WHERE menuset=' . db_quote($menuset));
 	$order = sprintf('%03u', $count);
-	$sql = "INSERT INTO " . prefix('menu') . " ( `title`, `link`, `type`, `show`, `menuset`, `sort_order`, `include_li`, `span_id`, `span_class`) " .
+	$sql = "INSERT INTO " . prefix('menu') . " ( title, link, \"type\", show, menuset, sort_order, include_li, span_id, span_class) " .
 					"VALUES (" . db_quote($result['title']) .
 					", " . db_quote($result['link']) .
 					", " . db_quote($result['type']) . ", " . $result['show'] .
@@ -724,10 +724,10 @@ function updateMenuItem(&$reports) {
 	// update the category in the category table
 	$sql = "UPDATE " . prefix('menu') . " SET title = " . db_quote($result['title']) .
 					", link = " . db_quote($result['link']) .
-					", type = " . db_quote($result['type']) . ", `show` = " . db_quote($result['show']) .
+					", type = " . db_quote($result['type']) . ", show = " . db_quote($result['show']) .
 					", menuset = " . db_quote($menuset) . ", include_li = " . $result['include_li'] .
 					", span_id = " . db_quote($result['span_id']) . ", span_class = " . db_quote($result['span_class']) .
-					" WHERE `id` = " . $result['id'];
+					" WHERE id = " . $result['id'];
 	if (query($sql)) {
 		if (isset($_POST['title']) && empty($result['title'])) {
 			$reports[] = "<p class = 'errorbox fade-message'>" . gettext("You forgot to give your menu item a <strong>title</strong>!") . " </p>";
@@ -749,7 +749,7 @@ function deleteItem(&
 $reports) {
 	if (isset($_GET['delete'])) {
 		$delete = sanitize_numeric($_GET['delete'], 3);
-		query("DELETE FROM " . prefix('menu') . " WHERE `id` = $delete");
+		query("DELETE FROM " . prefix('menu') . " WHERE id = $delete");
 		$reports[] = "<p class = 'messagebox fade-message'>" . gettext("Custom menu item successfully deleted!") . " </p>";
 	}
 }
@@ -924,11 +924,11 @@ function processMenuBulkActions() {
 						$message = gettext('Selected items deleted');
 						break;
 					case 'showall':
-						$sql = "UPDATE " . prefix('menu') . " SET `show` = 1 WHERE ";
+						$sql = "UPDATE " . prefix('menu') . " SET show = 1 WHERE ";
 						$message = gettext('Selected items published');
 						break;
 					case 'hideall':
-						$sql = "UPDATE " . prefix('menu') . " SET `show` = 0 WHERE ";
+						$sql = "UPDATE " . prefix('menu') . " SET show = 0 WHERE ";
 						$message = gettext('Selected items unpublished');
 						break;
 				}

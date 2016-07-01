@@ -354,7 +354,7 @@ class RSS extends feed {
 			unset($link['token']);
 			$token = Zenphoto_Authority::passwordHash(serialize($link), '');
 			if ($token == $options['token']) {
-				$adminobj = $_zp_authority->getAnAdmin(array('`id`=' => (int) $link['user']));
+				$adminobj = $_zp_authority->getAnAdmin(array('id=' => (int) $link['user']));
 				if ($adminobj) {
 					$_zp_current_admin_obj = $adminobj;
 					$_zp_loggedin = $_zp_current_admin_obj->getRights();
@@ -528,12 +528,12 @@ class RSS extends feed {
 		if (!zp_loggedin() && getOption('RSS_hitcounter')) {
 			$rssuri = $this->getCacheFilename();
 			$type = 'hitcounter';
-			$checkitem = query_single_row("SELECT `data` FROM " . prefix('plugin_storage') . " WHERE `aux` = " . db_quote($rssuri) . " AND `type` = '" . $type . "'", true);
+			$checkitem = query_single_row("SELECT \"data\" FROM " . prefix('plugin_storage') . " WHERE \"aux\" = " . db_quote($rssuri) . " AND \"type\" = '" . $type . "'", true);
 			if ($checkitem) {
 				$hitcount = $checkitem['data'] + 1;
-				query("UPDATE " . prefix('plugin_storage') . " SET `data` = " . $hitcount . " WHERE `aux` = " . db_quote($rssuri) . " AND `type` = '" . $type . "'", true);
+				query("UPDATE " . prefix('plugin_storage') . " SET \"data\" = " . $hitcount . " WHERE \"aux\" = " . db_quote($rssuri) . " AND \"type\" = '" . $type . "'", true);
 			} else {
-				query("INSERT INTO " . prefix('plugin_storage') . " (`type`,`aux`,`data`) VALUES ('" . $type . "'," . db_quote($rssuri) . ",1)", true);
+				query("INSERT INTO " . prefix('plugin_storage') . " (\"type\",\"aux\",\"data\") VALUES ('" . $type . "'," . db_quote($rssuri) . ",1)", true);
 			}
 		}
 	}
@@ -554,7 +554,7 @@ class RSS extends feed {
 			$title = $albumobj->getTitle($this->locale);
 			if (true || $this->sortorder == "latestupdated") {
 				$filechangedate = filectime(ALBUM_FOLDER_SERVERPATH . internalToFilesystem($albumobj->name));
-				$latestimage = query_single_row("SELECT mtime FROM " . prefix('images') . " WHERE albumid = " . $albumobj->getID() . " AND `show` = 1 ORDER BY id DESC");
+				$latestimage = query_single_row("SELECT mtime FROM " . prefix('images') . " WHERE albumid = " . $albumobj->getID() . " AND show = 1 ORDER BY id DESC");
 				if ($latestimage && $this->sortorder == 'latestupdated') {
 					$count = db_count('images', "WHERE albumid = " . $albumobj->getID() . " AND mtime = " . $latestimage['mtime']);
 				} else {

@@ -145,11 +145,11 @@ class Page extends CMSItems {
 		if ($success = parent::remove()) {
 			$sortorder = $this->getSortOrder();
 			if ($this->id) {
-				$success = $success && query("DELETE FROM " . prefix('obj_to_tag') . "WHERE `type`='pages' AND `objectid`=" . $this->id);
-				$success = $success && query("DELETE FROM " . prefix('comments') . " WHERE ownerid = " . $this->getID() . ' AND type="pages"'); // delete any comments
+				$success = $success && query("DELETE FROM " . prefix('obj_to_tag') . "WHERE \'type\'='pages' AND objectid=" . $this->id);
+				$success = $success && query("DELETE FROM " . prefix('comments') . " WHERE ownerid = " . $this->getID() . ' AND type=\'pages\''); // delete any comments
 				//	remove subpages
 				$mychild = strlen($sortorder) + 4;
-				$result = query_full_array('SELECT * FROM ' . prefix('pages') . " WHERE `sort_order` like '" . $sortorder . "-%'");
+				$result = query_full_array('SELECT * FROM ' . prefix('pages') . " WHERE sort_order LIKE '" . $sortorder . "-%'");
 				if (is_array($result)) {
 					foreach ($result as $row) {
 						if (strlen($row['sort_order']) == $mychild) {

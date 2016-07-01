@@ -144,10 +144,10 @@ function getMenuItems($menuset, $visible) {
 	$_menu_manager_items[$menuset][$visible] = array();
 	switch ($visible) {
 		case 'visible':
-			$where = " WHERE `show` = 1 AND menuset = " . db_quote($menuset);
+			$where = " WHERE show = 1 AND menuset = " . db_quote($menuset);
 			break;
 		case 'hidden':
-			$where = " WHERE `show` = 0 AND menuset = " . db_quote($menuset);
+			$where = " WHERE show = 0 AND menuset = " . db_quote($menuset);
 			break;
 		default:
 			$where = " WHERE menuset = " . db_quote($menuset);
@@ -242,7 +242,7 @@ function getItemTitleAndURL($item) {
 			$array = array("title" => $title, "url" => $url, "name" => $item['link'], 'protected' => $protected, 'theme' => $themename);
 			break;
 		case "page":
-			$sql = 'SELECT * FROM ' . prefix('pages') . ' WHERE `titlelink`="' . $item['link'] . '"';
+			$sql = 'SELECT * FROM ' . prefix('pages') . ' WHERE titlelink="' . $item['link'] . '"';
 			$result = query_single_row($sql);
 			if (is_array($result) && extensionEnabled('zenpage')) {
 				$obj = newPage($item['link']);
@@ -592,7 +592,7 @@ function printMenuemanagerPageListWithNav($prevtext, $nexttext, $menuset = 'defa
 	$orders = explode('-', $currentitem['sort_order']);
 	array_pop($orders);
 	$lookfor = implode('-', $orders) . '-';
-	$sql = 'SELECT `sort_order` FROM ' . prefix('menu') . ' WHERE `sort_order` LIKE "' . $lookfor . '%" ORDER BY `sort_order` ASC';
+	$sql = 'SELECT sort_order FROM ' . prefix('menu') . ' WHERE sort_order LIKE \'' . $lookfor . '%\' ORDER BY sort_order ASC';
 	$result = query_full_array($sql, false, 'sort_order');
 	if (is_array($result)) {
 		$l = strlen($lookfor) + 3;
@@ -834,12 +834,12 @@ function createMenuIfNotExists($menuitems, $menuset = 'default') {
 			switch ($type) {
 				case 'all_items':
 					$orders[$nesting] ++;
-					query("INSERT INTO " . prefix('menu') . " (`title`,`link`,`type`,`show`,`menuset`,`sort_order`) " .
+					query("INSERT INTO " . prefix('menu') . " (title,link,\"type\",show,menuset,sort_order) " .
 									"VALUES ('" . gettext('Home') . "', '" . WEBPATH . '/' . "','galleryindex','1'," . db_quote($menuset) . ',' . db_quote($orders), true);
 					$orders[$nesting] = addAlbumsToDatabase($menuset, $orders);
 					if (extensionEnabled('zenpage')) {
 						$orders[$nesting] ++;
-						query("INSERT INTO " . prefix('menu') . " (title`,`link`,`type`,`show`,`menuset`,`sort_order`) " .
+						query("INSERT INTO " . prefix('menu') . " (title,link,\"type\",show,menuset,sort_order) " .
 										"VALUES ('" . gettext('News index') . "', '" . getNewsIndexURL() . "','newsindex','1'," . db_quote($menuset) . ',' . db_quote(sprintf('%03u', $base + 1)), true);
 						$orders[$nesting] = addPagesToDatabase($menuset, $orders) + 1;
 						$orders[$nesting] = addCategoriesToDatabase($menuset, $orders);
@@ -941,7 +941,7 @@ function createMenuIfNotExists($menuitems, $menuset = 'default') {
 					$sort_order .= sprintf('%03u', $orders[$i]) . '-';
 				}
 				$sort_order = substr($sort_order, 0, -1);
-				$sql = "INSERT INTO " . prefix('menu') . " (`title`,`link`,`type`,`show`,`menuset`,`sort_order`,`include_li`) " .
+				$sql = "INSERT INTO " . prefix('menu') . " (title,link,\"type\",show,menuset,sort_order,include_li) " .
 								"VALUES (" . db_quote($result['title']) .
 								", " . db_quote($result['link']) .
 								"," . db_quote($result['type']) . "," . $result['show'] .

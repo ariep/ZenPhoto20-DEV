@@ -61,7 +61,7 @@ class Article extends CMSItems {
 	}
 
 	function setCategories($categories) {
-		query('DELETE FROM ' . prefix('news2cat') . ' WHERE `news_id`=' . $this->getID());
+		query('DELETE FROM ' . prefix('news2cat') . ' WHERE news_id=' . $this->getID());
 		$result = query("SELECT * FROM " . prefix('news_categories') . " ORDER BY titlelink");
 		if ($result) {
 			while ($cat = db_fetch_assoc($result)) {
@@ -134,7 +134,7 @@ class Article extends CMSItems {
 	function remove() {
 		if ($success = parent::remove()) {
 			if ($this->id) {
-				$success = query("DELETE FROM " . prefix('obj_to_tag') . "WHERE `type`='news' AND `objectid`=" . $this->getID());
+				$success = query("DELETE FROM " . prefix('obj_to_tag') . "WHERE \"type\"='news' AND \"objectid\"=" . $this->getID());
 				$success = $success && query("DELETE FROM " . prefix('news2cat') . " WHERE news_id = " . $this->getID()); // delete the category association
 				$success = $success && query("DELETE FROM " . prefix('comments') . " WHERE ownerid = " . $this->getID() . ' AND type="news"'); // delete any comments
 			}
