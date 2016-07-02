@@ -369,16 +369,23 @@ function getOptionsLike($pattern) {
 function setOption($key, $value, $persistent = true) {
 	global $_zp_options;
 	if ($persistent) {
-		$sql = 'INSERT INTO ' . prefix('options') . ' (name,ownerid,theme,value) VALUES (' . db_quote($key) . ',0,\'\',';
-		$sqlu = ' ON DUPLICATE KEY UPDATE value=';
 		if (is_null($value)) {
-			$sql .= 'NULL';
-			$sqlu .= 'NULL';
+			$v = 'NULL';
 		} else {
-			$sql .= db_quote($value);
-			$sqlu .= db_quote($value);
+			$v .= db_quote($value);
 		}
-		$sql .= ') ' . $sqlu;
+                if (strpos(db_software()['application'], 'pgsql') === FALSE) {
+                  $sql = 'INSERT INTO ' . prefix('options') . ' (name,ownerid,theme,value) VALUES (' . db_quote($key) . ',0,\'\',' . $v . ')
+                          ON DUPLICATE KEY UPDATE value=' . $v . ';';
+                }
+                else {
+                        $sql = 'DO $$
+                                BEGIN
+                                  INSERT INTO ' . prefix('options') . ' (name,ownerid,theme,value) VALUES (' . db_quote($key) . ',0,\'\',' . $v . ');
+                                EXCEPTION WHEN unique_violation THEN
+                                  UPDATE ' . prefix('options') . ' SET value = ' . $v . ' WHERE name = ' . db_quote($key) . ';
+                                END $$;';
+                }
 		$result = query($sql, false);
 	} else {
 		$result = true;
