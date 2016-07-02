@@ -414,7 +414,7 @@ if (file_exists(SERVERPATH . '/' . THEMEFOLDER . '/effervescence_plus')) {
 		$_zp_gallery->setCurrentTheme('effervescence+');
 		$_zp_gallery->save();
 	}
-	$options = query_full_array('SELECT LCASE(name) as name, value FROM ' . prefix('options') . ' WHERE theme = \'effervescence_plus\'');
+	$options = query_full_array('SELECT LOWER(name) as name, value FROM ' . prefix('options') . ' WHERE theme = \'effervescence_plus\'');
 	foreach ($options as $option) {
 		setThemeOption($option['name'], $option['value'], NULL, 'effervescence+', true);
 	}

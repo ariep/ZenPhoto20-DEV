@@ -452,7 +452,7 @@ function setOptionDefault($key, $default) {
 function loadLocalOptions($albumid, $theme) {
 	global $_zp_options, $_loaded_local;
 	//raw theme options
-	$sql = "SELECT LCASE(name) as name, value FROM " . prefix('options') . ' WHERE theme=' . db_quote($theme) . ' AND ownerid=0';
+	$sql = "SELECT LOWER(name) as name, value FROM " . prefix('options') . ' WHERE theme=' . db_quote($theme) . ' AND ownerid=0';
 	$optionlist = query_full_array($sql, false);
 	if ($optionlist !== false) {
 		foreach ($optionlist as $option) {
@@ -461,7 +461,7 @@ function loadLocalOptions($albumid, $theme) {
 	}
 	if ($albumid) {
 		//album-theme options
-		$sql = "SELECT LCASE(name) as name, value FROM " . prefix('options') . ' WHERE theme=' . db_quote($theme) . ' AND ownerid=' . $albumid;
+		$sql = "SELECT LOWER(name) as name, value FROM " . prefix('options') . ' WHERE theme=' . db_quote($theme) . ' AND ownerid=' . $albumid;
 		$optionlist = query_full_array($sql, false);
 		if ($optionlist !== false) {
 			foreach ($optionlist as $option) {
