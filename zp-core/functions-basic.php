@@ -369,7 +369,7 @@ function getOptionsLike($pattern) {
 function setOption($key, $value, $persistent = true) {
 	global $_zp_options;
 	if ($persistent) {
-		$sql = 'INSERT INTO ' . prefix('options') . ' (name,ownerid,theme,value) VALUES (' . db_quote($key) . ',0,"",';
+		$sql = 'INSERT INTO ' . prefix('options') . ' (name,ownerid,theme,value) VALUES (' . db_quote($key) . ',0,\'\',';
 		$sqlu = ' ON DUPLICATE KEY UPDATE value=';
 		if (is_null($value)) {
 			$sql .= 'NULL';
