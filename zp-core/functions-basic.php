@@ -315,7 +315,7 @@ function js_encode($this_string) {
 function primeOptions() {
 	global $_zp_options;
 	if (function_exists('query_full_array')) { //	incase we are in primitive mode
-		$sql = "SELECT LCASE(name) as name, value FROM " . prefix('options') . ' WHERE (theme="" OR theme IS NULL) AND ownerid=0';
+		$sql = "SELECT LOWER(name) as name, value FROM " . prefix('options') . ' WHERE (theme="" OR theme IS NULL) AND ownerid=0';
 		$optionlist = query_full_array($sql, false);
 		if ($optionlist !== false) {
 			$_zp_options = array();
