@@ -372,7 +372,7 @@ function setOption($key, $value, $persistent = true) {
 		if (is_null($value)) {
 			$v = 'NULL';
 		} else {
-			$v .= db_quote($value);
+			$v = db_quote($value);
 		}
                 if (strpos(db_software()['application'], 'pgsql') === FALSE) {
                   $sql = 'INSERT INTO ' . prefix('options') . ' (name,ownerid,theme,value) VALUES (' . db_quote($key) . ',0,\'\',' . $v . ')
