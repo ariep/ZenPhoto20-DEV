@@ -39,8 +39,8 @@ function reconfigureAction($mandatory) {
 			}
 			$dir = rtrim($dir, '/');
 			$location = "http://" . $_SERVER['HTTP_HOST'] . $dir . "/" . ZENFOLDER . "/setup/index.php?autorun=$where";
-			header("Location: $location");
-			exitZP();
+//			header("Location: $location");
+//			exitZP();
 		} else {
 			global $subtabs, $zenphoto_tabs, $main_tab_space, $_zp_admin_tab, $_zp_invisible_execute, $_zp_gallery;
 			$_zp_invisible_execute = 1;
